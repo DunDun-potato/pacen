@@ -89,9 +89,9 @@ Dựa trên [Thống kê chỉ số Apple Heath.xlsx](../Th%E1%BB%91ng%20k%C3%AA
    - Với các biến cộng dồn (`StepCount`, `ActiveEnergyBurned`, `BasalEnergyBurned`, `DistanceWalkingRunning`): **Tuyệt đối không** dùng `HKSampleQuery` rồi tự cộng tổng (`sum`). Bắt buộc dùng `HKStatisticsCollectionQuery` với tùy chọn `.cumulativeSum` để HealthKit tự động khử trùng lặp giữa Apple Watch và iPhone.
    - Với các biến mẫu rời rạc (`HeartRate`, `SleepAnalysis`, `HeartRateVariabilitySDNN`): Nếu trong cùng một khoảng thời gian $[t_1, t_2]$ có nhiều thiết bị cùng ghi, lọc theo thứ tự ưu tiên `sourceRevision`:
 
-     ```math
-     \text{Priority 1: Apple Watch của chính user } (\texttt{productType.hasPrefix("Watch")}) \succ \text{Priority 2: Nhẫn/Vòng đeo chuyên dụng (WHOOP, Oura, Garmin)} \succ \text{Priority 3: iPhone}
-     ```
+```math
+\text{Priority 1: Apple Watch của chính user } (\texttt{productType.hasPrefix("Watch")}) \succ \text{Priority 2: Nhẫn/Vòng đeo chuyên dụng (WHOOP, Oura, Garmin)} \succ \text{Priority 3: iPhone}
+```
 
 ---
 
@@ -108,22 +108,22 @@ Dựa trên [Thống kê chỉ số Apple Heath.xlsx](../Th%E1%BB%91ng%20k%C3%AA
      - Thời gian nằm trên giường ($\text{TIB}$): $\text{TIB} = \sum \Delta t(\text{inBed} \cup \text{awake} \cup \text{asleepCore} \cup \text{asleepDeep} \cup \text{asleepREM})$ (giờ).
      - Thời gian ngủ thực tế ($\text{TST}$ / $\text{Actual Sleep}$):
 
-       ```math
-       \text{TST}(t) = \Delta t(\text{asleepCore}) + \Delta t(\text{asleepDeep}) + \Delta t(\text{asleepREM}) \quad (\text{giờ})
-       ```
+```math
+\text{TST}(t) = \Delta t(\text{asleepCore}) + \Delta t(\text{asleepDeep}) + \Delta t(\text{asleepREM}) \quad (\text{giờ})
+```
 
-     - Hiệu suất giấc ngủ ($\text{SE}$): $\text{SE}(t) = \frac{\text{TST}(t)}{\max(\text{TIB}(t),\thinspace  \text{TST}(t))} \times 100$%.
-     - Tỷ lệ ngủ phục hồi ($\text{Restorative}$% — gồm giấc ngủ sâu NREM3 và REM theo **Doherty et al., 2025, Bảng 2 & Bảng 4, tr. 133, 136**):
+  - Hiệu suất giấc ngủ ($\text{SE}$): $\text{SE}(t) = \frac{\text{TST}(t)}{\max(\text{TIB}(t),\thinspace  \text{TST}(t))} \times 100$%.
+  - Tỷ lệ ngủ phục hồi ($\text{Restorative}$% — gồm giấc ngủ sâu NREM3 và REM theo **Doherty et al., 2025, Bảng 2 & Bảng 4, tr. 133, 136**):
 
-       ```math
-       \text{Restorative}\%(t) = \frac{\Delta t(\text{asleepDeep}) + \Delta t(\text{asleepREM})}{\text{TST}(t)} \times 100\%
-       ```
+```math
+\text{Restorative}\%(t) = \frac{\Delta t(\text{asleepDeep}) + \Delta t(\text{asleepREM})}{\text{TST}(t)} \times 100\%
+```
 
-     - **Chỉ số Phân mảnh Giấc ngủ & Số lần Thức giấc ($N _ {\text{awake}}$, $\text{WASO}$ — Theo tiêu chuẩn đồng thuận của National Sleep Foundation trong [Ohayon et al., 2017](Recovery_Score_Papers/_Ohayon-et-al.2017_National-Sleep-Foundations-Sleep-Quality-Recommendations.pdf); [S16_Miller2022](Recovery_Score_Papers/S16_Miller2022_PMC9412437.pdf); và [Doherty et al., 2025, Bảng 4, tr. 136](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)):**
-       - Theo đồng thuận chuyên gia Delphi trên $277$ nghiên cứu của [Ohayon et al. (2017, *Sleep Health*, tr. 10–14)](Recovery_Score_Papers/_Ohayon-et-al.2017_National-Sleep-Foundations-Sleep-Quality-Recommendations.pdf), khái niệm *cơn thức giấc rõ rệt (awakening)* được định nghĩa là **đoạn thức kéo dài $\ge 5\text{ phút}$**:
-         - **Ngưỡng tốt (Appropriate):** Hiệu suất ngủ $\text{SE} \ge 85$% (mọi lứa tuổi); số lần thức giấc ($\ge 5\text{ phút}$) $0\text{–}1\text{ lần/đêm}$ (người trưởng thành $18\text{–}64\text{ tuổi}$); tổng thời gian thức sau khi vào giấc $\text{WASO} \le 20\text{ phút}$; thời gian chờ ngủ $\le 30\text{ phút}$.
-         - **Ngưỡng kém (Not Appropriate):** $\text{SE} \le 74$% ở người lớn $26\text{–}64\text{ tuổi}$ (hoặc $\le 64$% ở thanh niên $18\text{–}25\text{ tuổi}$); **$\ge 4$ lần thức giấc ($\ge 5\text{ phút}$)** ở mọi nhóm tuổi; **$\text{WASO} \ge 41\text{ phút}$** ($18\text{–}64\text{ tuổi}$, hoặc $\ge 51\text{ phút}$ trên toàn dải tuổi); thời gian chờ ngủ $> 45\text{ phút}$; và giấc ngủ ngắn ban ngày $> 100\text{ phút}$.
-       - Trên `HKCategoryTypeIdentifierSleepAnalysis` của Apple Watch: tính tổng $\text{WASO}(t) = \sum \Delta t(\text{awake})$ (phút) và đếm số đoạn `HKCategoryValueSleepAnalysisAwake` nằm trong $[t _ {\text{onset}},\thinspace  t _ {\text{wake}}]$. (Lưu ý hiệu chuẩn cảm biến đeo tay: chuẩn NSF tính đoạn thức $\ge 5\text{ phút}$; khi đọc dữ liệu HealthKit chia đoạn thô từng $30\text{ s–}1\text{ phút}$ từ Apple Watch, cấu hình bộ lọc $\ge 2\text{ phút}$ làm ngưỡng nhạy kỹ thuật `[Engineering Heuristic]` hoặc lọc chặt $\ge 5\text{ phút}$ theo đúng định nghĩa Ohayon 2017 tùy thiết lập triển khai).
+  - **Chỉ số Phân mảnh Giấc ngủ & Số lần Thức giấc ($N _ {\text{awake}}$, $\text{WASO}$ — Theo tiêu chuẩn đồng thuận của National Sleep Foundation trong [Ohayon et al., 2017](Recovery_Score_Papers/_Ohayon-et-al.2017_National-Sleep-Foundations-Sleep-Quality-Recommendations.pdf); [S16_Miller2022](Recovery_Score_Papers/S16_Miller2022_PMC9412437.pdf); và [Doherty et al., 2025, Bảng 4, tr. 136](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)):**
+    - Theo đồng thuận chuyên gia Delphi trên $277$ nghiên cứu của [Ohayon et al. (2017, *Sleep Health*, tr. 10–14)](Recovery_Score_Papers/_Ohayon-et-al.2017_National-Sleep-Foundations-Sleep-Quality-Recommendations.pdf), khái niệm *cơn thức giấc rõ rệt (awakening)* được định nghĩa là **đoạn thức kéo dài $\ge 5\text{ phút}$**:
+      - **Ngưỡng tốt (Appropriate):** Hiệu suất ngủ $\text{SE} \ge 85$% (mọi lứa tuổi); số lần thức giấc ($\ge 5\text{ phút}$) $0\text{–}1\text{ lần/đêm}$ (người trưởng thành $18\text{–}64\text{ tuổi}$); tổng thời gian thức sau khi vào giấc $\text{WASO} \le 20\text{ phút}$; thời gian chờ ngủ $\le 30\text{ phút}$.
+      - **Ngưỡng kém (Not Appropriate):** $\text{SE} \le 74$% ở người lớn $26\text{–}64\text{ tuổi}$ (hoặc $\le 64$% ở thanh niên $18\text{–}25\text{ tuổi}$); **$\ge 4$ lần thức giấc ($\ge 5\text{ phút}$)** ở mọi nhóm tuổi; **$\text{WASO} \ge 41\text{ phút}$** ($18\text{–}64\text{ tuổi}$, hoặc $\ge 51\text{ phút}$ trên toàn dải tuổi); thời gian chờ ngủ $> 45\text{ phút}$; và giấc ngủ ngắn ban ngày $> 100\text{ phút}$.
+    - Trên `HKCategoryTypeIdentifierSleepAnalysis` của Apple Watch: tính tổng $\text{WASO}(t) = \sum \Delta t(\text{awake})$ (phút) và đếm số đoạn `HKCategoryValueSleepAnalysisAwake` nằm trong $[t _ {\text{onset}},\thinspace  t _ {\text{wake}}]$. (Lưu ý hiệu chuẩn cảm biến đeo tay: chuẩn NSF tính đoạn thức $\ge 5\text{ phút}$; khi đọc dữ liệu HealthKit chia đoạn thô từng $30\text{ s–}1\text{ phút}$ từ Apple Watch, cấu hình bộ lọc $\ge 2\text{ phút}$ làm ngưỡng nhạy kỹ thuật `[Engineering Heuristic]` hoặc lọc chặt $\ge 5\text{ phút}$ theo đúng định nghĩa Ohayon 2017 tùy thiết lập triển khai).
    - **Trường hợp B (Chỉ có Thời lượng ngủ, không có Giai đoạn — Watch đời cũ hoặc chỉ có `asleepUnspecified` / `inBed`):**
      - $\text{TST}(t) = \Delta t(\text{asleepUnspecified})$ (nếu chỉ có `inBed`, ước tính $\text{TST}(t) \approx 0.90 \times \Delta t(\text{inBed})$ `[Engineering Heuristic]`).
      - Đánh dấu cờ `has_sleep_stages = False`.
@@ -145,45 +145,45 @@ Sử dụng `HKHeartbeatSeriesQuery` để trích xuất chuỗi các tuple $\le
 1. **Tính khoảng cách nhịp $\text{RR} _ j$ ($\text{ms}$):**
    Với mọi $j \in \lbrace 1, \dots, N_k - 1\rbrace$ mà $\text{precededByGap} _ {j+1} = \text{False}$:
 
-   ```math
-   \text{RR}_j = \left(t_{j+1} - t_j\right) \times 1000 \quad (\text{ms})
-   ```
+```math
+\text{RR}_j = \left(t_{j+1} - t_j\right) \times 1000 \quad (\text{ms})
+```
 
    (Nếu $\text{precededByGap} _ {j+1} = \text{True}$ hoặc $t _ {j+1} - t_j > 2.0\text{ s}$, đánh dấu đây là điểm ngắt quãng và **không tính hiệu số bắc cầu qua Gap**, dựa trên phương pháp loại bỏ và nối chuỗi RR của Apple Watch trong [R24_Hernando2018](Recovery_Score_Papers/R24_Hernando2018_PMC6111985.pdf), bài báo ghi nhận Apple Watch có khoảng $10$% nhịp thiếu với các gap $3.3\text{–}10.4\text{ s}$ [trung bình $\sim 6\text{ s}$]).
 2. **Lọc nhịp ngoại lai & Bộ lọc Độ Tin Cậy Xác Suất Bayes (Artifact Filtering & Bayesian Beat Confidence Gate):**
    - **Bộ lọc miền thời gian** (dựa trên khoảng sinh lý $30\text{–}200\text{ bpm}$ và bộ lọc trung vị trượt loại ngoại tâm thu của [Kiviniemi et al., 2007](Recovery_Score_Papers/kiviniemi2007.pdf) & [R02_Mishra2020](Recovery_Score_Papers/R02_Mishra2020_PMC9020268.pdf); ngưỡng số $12\text{ bpm}$ / $0.20$ / $7$ nhịp là `[Engineering Heuristic]`): Loại bỏ $\text{RR} _ j \notin [300\text{ ms},\thinspace  2000\text{ ms}]$. Tính trung vị cục bộ $m_j = \text{median}(\text{RR} _ {j-3}, \dots, \text{RR} _ {j+3})$ trên $7$ nhịp lân cận. Loại bỏ $\text{RR} _ j$ nếu:
 
-     ```math
-     \left|\frac{60000}{\text{RR}_j} - \frac{60000}{m_j}\right| > 12\text{ bpm} \quad \text{hoặc} \quad \frac{|\text{RR}_j - m_j|}{m_j} > 0.20
-     ```
+```math
+\left|\frac{60000}{\text{RR}_j} - \frac{60000}{m_j}\right| > 12\text{ bpm} \quad \text{hoặc} \quad \frac{|\text{RR}_j - m_j|}{m_j} > 0.20
+```
 
    - **Cổng Kiểm tra Hợp lệ Sinh lý SQI Tầng 1 ([Orphanidou et al., 2015](Recovery_Score_Papers/_Orphanidou%202015_Signal-Quality%20Indices%20for%20the%20Electrocardiogram%20and%20Photoplethysmogram.pdf)) & Bộ lọc Độ Tin Cậy Xác Suất Bayes từng nhịp ($C_j$ — Bằng sáng chế WHOOP [`P02` (`US 9,750,415 B2`, Cột 17–18, tr. 47)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf) & [`P04` (`US 2017/0188847 A1`, mục `[0125]–[0127]`)](Recovery_Score_Papers/P04_WHOOP_US20170188847A1.pdf)):**
      - **Kiểm tra khả thi theo từng cửa sổ $10\text{ s}$ (áp dụng trực tiếp trên chuỗi `HeartbeatSeries` theo [Orphanidou et al., 2015, Mục II.B, tr. 834](Recovery_Score_Papers/_Orphanidou%202015_Signal-Quality%20Indices%20for%20the%20Electrocardiogram%20and%20Photoplethysmogram.pdf)):** Chấp nhận cửa sổ $10\text{ s}$ khi thỏa mãn tuần tự 3 điều kiện: (1) nhịp tim ngoại suy nằm trong dải $[40,\thinspace  180]\text{ bpm}$, (2) khoảng trống tối đa giữa hai nhịp liên tiếp $\le 3.0\text{ s}$, và (3) tỷ số $\frac{\max(\text{RR})}{\min(\text{RR})} < 2.2$. (Lưu ý kỹ thuật: Bộ quy tắc khớp mẫu hình thái sóng PPG thích ứng $r \ge 0.86$ [độ nhạy $91$%, độ đặc hiệu $95$%] của Orphanidou et al. yêu cầu sóng PPG quang học thô — tín hiệu này không được Apple HealthKit phơi bày ra ngoài, nên tầng `HeartbeatSeries` chỉ áp dụng được 3 luật khoảng R-R kết hợp bộ lọc Bayes bên dưới).
      - **Bộ lọc xác suất Bayes từng nhịp ($C_j$ — xuất phát từ Bằng sáng chế WHOOP `P02/P04`, không có trong Hernando 2018 hay Orphanidou 2015):**
        Trên không gian nhịp tim $\Theta = [20, 240]\text{ bpm}$, với nhịp tức thời $\hat{\gamma} _ j = \frac{60000}{\text{RR} _ j}$ và khoảng cách thời gian giữa hai đỉnh $\lambda_j = \frac{\text{RR} _ j}{1000}\text{ (s)}$, phân phối tiên nghiệm tại nhịp $j$ mở rộng phương sai nhiễu quá trình tỷ lệ với $\lambda_j$:
 
-     ```math
-     \pi_j(\theta) = \left(\eta_{j-1} * \mathcal{N}\left(0,\, \lambda_j \tilde{\sigma}^2\right)\right)(\theta), \qquad l_j(\theta) \propto p\cdot\mathcal{N}\left(\theta \mid \hat{\gamma}_j, \sigma_{\text{PPG}}^2\right) + (1 - p)\cdot\text{DiscUnif}(\Theta)
-     ```
+```math
+\pi_j(\theta) = \left(\eta_{j-1} * \mathcal{N}\left(0,\, \lambda_j \tilde{\sigma}^2\right)\right)(\theta), \qquad l_j(\theta) \propto p\cdot\mathcal{N}\left(\theta \mid \hat{\gamma}_j, \sigma_{\text{PPG}}^2\right) + (1 - p)\cdot\text{DiscUnif}(\Theta)
+```
 
-     ```math
-     \eta_j(\theta) = \frac{\pi_j(\theta)\,l_j(\theta)}{\sum_{\theta' \in \Theta} \pi_j(\theta')\,l_j(\theta')}, \qquad \hat{p}_j = \arg\max_{\theta \in \Theta} \eta_j(\theta), \qquad C_j = \sum_{\theta \in [\hat{p}_j - \epsilon_1,\, \hat{p}_j + \epsilon_1]} \eta_j(\theta)
-     ```
+```math
+\eta_j(\theta) = \frac{\pi_j(\theta)\,l_j(\theta)}{\sum_{\theta' \in \Theta} \pi_j(\theta')\,l_j(\theta')}, \qquad \hat{p}_j = \arg\max_{\theta \in \Theta} \eta_j(\theta), \qquad C_j = \sum_{\theta \in [\hat{p}_j - \epsilon_1,\, \hat{p}_j + \epsilon_1]} \eta_j(\theta)
+```
 
-     (với $\tilde{\sigma} = 3.0\text{ bpm/s}^{1/2}$, $\sigma _ {\text{PPG}} = 2.0\text{ bpm}$, $p = 0.85$, $\epsilon_1 = 5.0\text{ bpm}$, $C _ {\text{thresh}} = 0.80$ — đây là bộ tham số `[Patent P02/P04 + Engineering Heuristic]`, cần hiệu chỉnh trên dữ liệu `HeartbeatSeries` thực tế của Apple Watch).
+(với $\tilde{\sigma} = 3.0\text{ bpm/s}^{1/2}$, $\sigma _ {\text{PPG}} = 2.0\text{ bpm}$, $p = 0.85$, $\epsilon_1 = 5.0\text{ bpm}$, $C _ {\text{thresh}} = 0.80$ — đây là bộ tham số `[Patent P02/P04 + Engineering Heuristic]`, cần hiệu chỉnh trên dữ liệu `HeartbeatSeries` thực tế của Apple Watch).
 3. **Kiểm tra độ phủ (Coverage Check — `[Engineering Heuristic]` lấy cảm hứng từ quản lý dữ liệu khuyết của [R03_Natarajan2020](Recovery_Score_Papers/R03_Natarajan2020_PMC7705652.pdf)):**
    - Gọi $T _ {\text{series}, k} = (t _ {N_k} - t_1) \times 1000$ là tổng thời lượng của bản ghi Tachogram thứ $k$ (trên Apple Watch thường dài $60\text{ s}$ đến $300\text{ s}$).
    - Chỉ giữ lại bản ghi $k$ nếu độ phủ nhịp hợp lệ đạt tối thiểu $70$% và đủ số cặp nhịp `[Engineering Heuristic]`:
 
-     ```math
-     q_k = \frac{\sum_{j \text{ valid}} \text{RR}_j}{T_{\text{series}, k}} \ge 0.70 \quad \text{và số cặp nhịp liên tiếp hợp lệ } |\mathcal{V}_k| \ge 25
-     ```
+```math
+q_k = \frac{\sum_{j \text{ valid}} \text{RR}_j}{T_{\text{series}, k}} \ge 0.70 \quad \text{và số cặp nhịp liên tiếp hợp lệ } |\mathcal{V}_k| \ge 25
+```
 
 4. **Tính $\text{RMSSD} _ k$ cho từng bản ghi hợp lệ (không tính hiệu số bắc cầu qua Gap — [R24_Hernando2018](Recovery_Score_Papers/R24_Hernando2018_PMC6111985.pdf)):**
 
-   ```math
-   \text{RMSSD}_k = \sqrt{\frac{1}{|\mathcal{V}_k|} \sum_{(j, j+1) \in \mathcal{V}_k} \left(\text{RR}_{j+1} - \text{RR}_j\right)^2} \quad (\text{ms})
-   ```
+```math
+\text{RMSSD}_k = \sqrt{\frac{1}{|\mathcal{V}_k|} \sum_{(j, j+1) \in \mathcal{V}_k} \left(\text{RR}_{j+1} - \text{RR}_j\right)^2} \quad (\text{ms})
+```
 
 #### Trường hợp 1B (Trên iOS 27.0+ — thận trọng khả dụng): Có mẫu `HKQuantityTypeIdentifierHeartRateVariabilityRMSSD`
 - Nếu không có `HeartbeatSeries` nhưng có các mẫu `HeartRateVariabilityRMSSD` *(Dòng 221 — Excel ghi chú: `"Chưa rõ – Apple chưa công bố thiết bị nào ghi"`, `"Thu từ đồng hồ? = Chưa rõ"`)* trong khoảng $[t _ {\text{onset}},\thinspace  t _ {\text{wake}}]$, lọc các mẫu nằm trong khoảng hợp lệ $[5\text{ ms},\thinspace  250\text{ ms}]$ và gán $q_k = 1.0$.
@@ -195,24 +195,24 @@ Sử dụng `HKHeartbeatSeriesQuery` để trích xuất chuỗi các tuple $\le
 #### Bước tổng hợp HRV cả đêm ($\text{HRV} _ {\text{night}}$) và Biến đổi Logarit ( $\text{LnHRV}(t)$ ):
 - Theo khảo sát giao thức lấy mẫu $\text{HRV}$ của [Doherty et al. (2025, Bảng 3, tr. 135 & tr. 138)](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf) và nghiên cứu độ tin cậy qua đêm của [Nuuttila et al. (2024)](Recovery_Score_Papers/GR01_Nuuttila2024_SportsMedOpen_s40798-024-00779-5.pdf), tính trung bình có trọng số chất lượng trên toàn bộ các mẫu hợp lệ trong giấc ngủ chính $[t _ {\text{onset}},\thinspace  t _ {\text{wake}}]$:
 
-  ```math
-  \text{HRV}_{\text{night}}(t) = \frac{\sum_{k=1}^K \omega_k \cdot q_k \cdot \text{HRV}_k}{\sum_{k=1}^K \omega_k \cdot q_k}
-  ```
+```math
+\text{HRV}_{\text{night}}(t) = \frac{\sum_{k=1}^K \omega_k \cdot q_k \cdot \text{HRV}_k}{\sum_{k=1}^K \omega_k \cdot q_k}
+```
 
   trong đó hỗ trợ 2 chế độ cấu hình:
   - **Chế độ Mặc định khuyến nghị — Entire Sleep (`SleepFull` — theo Oura / Garmin / [Nuuttila et al., 2024](Recovery_Score_Papers/GR01_Nuuttila2024_SportsMedOpen_s40798-024-00779-5.pdf)):** $\omega_k = 1.0$ cho mọi giai đoạn ngủ `asleepCore`, `asleepDeep`, `asleepREM` (loại bỏ `awake`/chuyển động). Theo [Nuuttila et al. (2024, Bảng 1 & tr. 9)](Recovery_Score_Papers/GR01_Nuuttila2024_SportsMedOpen_s40798-024-00779-5.pdf), `SleepFull` có hệ số biến thiên qua các ngày thấp hơn đáng kể so với đo đứng/nằm buổi sáng (`CV = 4.2 ± 1.7%` cho $\text{LnRMSSD}$, `4.15 ± 0.31`; `CV = 6.0 ± 2.1%` cho HR; không có chỉ số `ICC = 0.94` hay `3.2%` trong bài báo), đồng thời tránh được sai số phân loại giai đoạn ngủ từ thiết bị đeo ([Doherty et al., 2025, tr. 138](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)).
   - **Chế độ Tùy chọn — Deep Sleep Weighted (`SWS-Weighted` — theo Bằng sáng chế WHOOP [`P02` (Cột 28 & Claims 9–17, tr. 65)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf), Brandenberger et al., 2005, và [Doherty et al., 2025, Bảng 3, tr. 135](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)):** Ưu tiên giai đoạn ngủ sóng chậm cuối đêm (WHOOP SWS-weighted); bộ trọng số $\omega_k = 2.0$ (`asleepDeep`), $\omega_k = 1.0$ (`asleepCore`), $\omega_k = 0.25$ (`asleepREM`) là `[Engineering Heuristic]`.
 - **Biến đổi Logarit tự nhiên ([Buchheit, 2014](Recovery_Score_Papers/R15_Buchheit2014_PMC3936188.pdf); [Plews et al., 2013](Recovery_Score_Papers/plews2013.pdf)):**
 
-  ```math
-  \text{LnHRV}(t) = \ln\left(\text{HRV}_{\text{night}}(t)\right)
-  ```
+```math
+\text{LnHRV}(t) = \ln\left(\text{HRV}_{\text{night}}(t)\right)
+```
 
 - **Tính độ tin cậy dữ liệu HRV trong đêm $Q _ {\text{HRV}}(t) \in [0.5, 1.0]$ `[Engineering Heuristic]`:**
 
-  ```math
-  Q_{\text{HRV}}(t) = \min\left(1.0,\; 0.50 + 0.10 \times K_{\text{valid}}\right)
-  ```
+```math
+Q_{\text{HRV}}(t) = \min\left(1.0,\; 0.50 + 0.10 \times K_{\text{valid}}\right)
+```
 
   (Nếu cả đêm chỉ có $1$ mẫu HRV, $Q _ {\text{HRV}} = 0.60$; nếu có $\ge 5$ mẫu hợp lệ trong đêm, $Q _ {\text{HRV}} = 1.0$).
 
@@ -223,9 +223,9 @@ Sử dụng `HKHeartbeatSeriesQuery` để trích xuất chuỗi các tuple $\le
 1. **Chuyển đổi đơn vị từ HealthKit (Chống bẫy đơn vị Dòng 39):**
    - Trong file Excel Dòng 39, `HKQuantityTypeIdentifierHeartRate` có đơn vị gốc là `count/s`. Nếu lấy giá trị theo `count/s`, bắt buộc quy đổi:
 
-     ```math
-     \text{HR}_m\text{ (bpm)} = 60 \times \text{HR}_m\text{ (count/s)}
-     ```
+```math
+\text{HR}_m\text{ (bpm)} = 60 \times \text{HR}_m\text{ (count/s)}
+```
 
 2. **Lọc mẫu trong cửa sổ ngủ $[t _ {\text{onset}},\thinspace  t _ {\text{wake}}]$ & Phân bổ Giới hạn Sai số Đo theo Trạng thái Vận động (Theo [R01_Alavi2022](Recovery_Score_Papers/R01_Alavi2022_PMC8799466.pdf); [R03_Natarajan2020](Recovery_Score_Papers/R03_Natarajan2020_PMC7705652.pdf); [Nelson & Allen, 2019](Recovery_Score_Papers/_mhealth-2019-3-e10828.pdf); Mühlen et al., 2021; [GR03_OGrady2024](Recovery_Score_Papers/GR03_OGrady2024_Sensors_s24196220.pdf); [Doherty et al., 2025, Bảng 3, tr. 135](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf); và Bằng sáng chế [`P04`](Recovery_Score_Papers/P04_WHOOP_US20170188847A1.pdf)):**
    - Theo [Doherty et al. (2025, Bảng 3 Footnote, tr. 135)](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf): *"For most composite health scores (CHSs), RHR is calculated using data from sleep or wakeful inactivity, filtered to exclude periods of movement or physiological stress."* Đồng thời, kiểm định 24 giờ liên tục Apple Watch so với ECG lưu động của [Nelson & Allen (2019, *JMIR mHealth uHealth*, Bảng 1–2, tr. 7–8)](Recovery_Score_Papers/_mhealth-2019-3-e10828.pdf) (nghiên cứu đơn cá thể $N=1$, $1,437\text{ điểm}$) chứng minh trạng thái **Ngủ** cho sai số thấp nhất ($\text{MAPE} = 3.12$%, $\text{MAE} = 1.96\text{ bpm}$, sai số trung bình $-0.95 \pm 2.78\text{ bpm}$, $\text{CCC} = 0.791$), trong khi trạng thái **Ngồi yên ban ngày** tăng sai số lên $\text{MAPE} = 7.21$% ($\text{CCC} = 0.453$) và **Sinh hoạt thường ngày (ADL)** vọt lên $\text{MAPE} = 13.70$% ($\text{CCC} = 0.460$, vượt ngưỡng $> 10$%). Vì vậy, bắt buộc khóa $\text{RHR} _ {\text{night}}$ vào cửa sổ ngủ: chỉ giữ các mẫu $\text{HR} _ m \in [30,\thinspace  160]\text{ bpm}$ ghi trong giai đoạn ngủ (`asleepCore`, `asleepDeep`, `asleepREM` hoặc `asleepUnspecified`, loại bỏ `awake` và mọi phút có $\text{StepCount} > 0$).
@@ -235,9 +235,9 @@ Sử dụng `HKHeartbeatSeriesQuery` để trích xuất chuỗi các tuple $\le
      - **Trạng thái Tập luyện ($\text{Workout}$ / $\text{MET} > 3.0$):** Lấy mẫu PPG liên tục ($1\text{–}5\text{ s/lần}$ trên Apple Watch; chạy bộ có $\text{MAPE} = 3.01$%, $\text{CCC} = 0.864$ trong [Nelson & Allen, 2019](Recovery_Score_Papers/_mhealth-2019-3-e10828.pdf)), dùng để tích phân $\text{Strain}$ ở Bước 5.2 ($\sigma _ {\text{err,ex}} \le 5.0\text{ bpm}$ `[Heuristic]`).
    - **Tính $\text{RHR} _ {\text{night}}(t)$:** Lấy trung vị của các mẫu hợp lệ trong đêm:
 
-     ```math
-     \text{RHR}_{\text{night}}(t) = \text{median}_{m \in \text{Sleep}}\left(\text{HR}_m\right)
-     ```
+```math
+\text{RHR}_{\text{night}}(t) = \text{median}_{m \in \text{Sleep}}\left(\text{HR}_m\right)
+```
 
 3. **Fallback khi thiếu mẫu `HeartRate` ban đêm:**
    - Sử dụng giá trị mới nhất của `HKQuantityTypeIdentifierRestingHeartRate` *(Dòng 43)* trong ngày.
@@ -251,9 +251,9 @@ Sử dụng `HKHeartbeatSeriesQuery` để trích xuất chuỗi các tuple $\le
    - Lọc các mẫu hợp lệ trong khoảng $[8.0,\thinspace  35.0]\text{ brpm}$ `[Engineering Heuristic]` nằm trong cửa sổ ngủ $[t _ {\text{onset}},\thinspace  t _ {\text{wake}}]$.
    - Lấy trung vị ban đêm ([R03_Natarajan2020](Recovery_Score_Papers/R03_Natarajan2020_PMC7705652.pdf)):
 
-     ```math
-     \text{RespR}_{\text{night}}(t) = \text{median}_{m \in \text{Sleep}}\left(\text{RespR}_m\right)
-     ```
+```math
+\text{RespR}_{\text{night}}(t) = \text{median}_{m \in \text{Sleep}}\left(\text{RespR}_m\right)
+```
 
 2. **Nhiệt độ cổ tay khi ngủ ($T _ {\text{wrist}}$ — Dòng 63):**
    - Lấy mẫu `HKQuantityTypeIdentifierAppleSleepingWristTemperature` (đơn vị $^\circ\text{C}$, lọc khoảng hợp lệ $[32.0^\circ\text{C},\thinspace  41.0^\circ\text{C}]$ `[Engineering Heuristic]`).
@@ -332,24 +332,24 @@ Theo [Doherty et al. (2025, tr. 134 & Bảng 4, tr. 136–137)](Recovery_Score_P
 1. **Pha trộn Đêm nay và Trung bình trượt 3 ngày ($\text{MA} _ 3$) `[Heuristic Prior: \lambda_{\text{acute}} = 0.85]`:**
    Để giảm nhiễu ngẫu nhiên của một đêm đơn lẻ nhưng vẫn giữ độ nhạy cao với đáp ứng sinh lý cấp tính, giá trị hiệu dụng $\tilde{x}(t)$ của $\text{LnHRV}$ và $\text{RHR}$ được tính bằng tổ hợp lồi giữa đêm nay ($85$%) và trung bình trượt $3\text{ ngày}$ gần nhất ($\text{MA} _ 3$, $15$%):
 
-   ```math
-   \tilde{x}_{\text{LnHRV}}(t) = \lambda_{\text{acute}}\,\text{LnHRV}(t) + (1 - \lambda_{\text{acute}})\,\text{MA}_3(\text{LnHRV}, t), \qquad \lambda_{\text{acute}} = 0.85
-   ```
+```math
+\tilde{x}_{\text{LnHRV}}(t) = \lambda_{\text{acute}}\,\text{LnHRV}(t) + (1 - \lambda_{\text{acute}})\,\text{MA}_3(\text{LnHRV}, t), \qquad \lambda_{\text{acute}} = 0.85
+```
 
-   ```math
-   \tilde{x}_{\text{RHR}}(t) = \lambda_{\text{acute}}\,\text{RHR}_{\text{night}}(t) + (1 - \lambda_{\text{acute}})\,\text{MA}_3(\text{RHR}_{\text{night}}, t), \qquad \lambda_{\text{acute}} = 0.85
-   ```
+```math
+\tilde{x}_{\text{RHR}}(t) = \lambda_{\text{acute}}\,\text{RHR}_{\text{night}}(t) + (1 - \lambda_{\text{acute}})\,\text{MA}_3(\text{RHR}_{\text{night}}, t), \qquad \lambda_{\text{acute}} = 0.85
+```
 
 2. **Chỉ số Cân bằng Xu hướng Ngắn hạn 3 ngày so với 7 ngày ($\Delta \text{MA} _ {3,7}$ — Theo Bằng sáng chế WHOOP [`P02` (Cột 28, tr. 52)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf), Plews et al., 2012, [2013](Recovery_Score_Papers/plews2013.pdf), và [Doherty et al., 2025, Bảng 4, tr. 136](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)):**
    Để phát hiện sớm trạng thái quá tải tích lũy (Non-Functional Overreaching — NFOR) khi trung bình 3 ngày suy giảm liên tục so với trung bình 7 ngày:
 
-   ```math
-   \Delta \text{MA}_{3,7}(\text{LnHRV}, t) = \text{MA}_3(\text{LnHRV}, t) - \text{MA}_7(\text{LnHRV}, t)
-   ```
+```math
+\Delta \text{MA}_{3,7}(\text{LnHRV}, t) = \text{MA}_3(\text{LnHRV}, t) - \text{MA}_7(\text{LnHRV}, t)
+```
 
-   ```math
-   \Delta \text{MA}_{3,7}(\text{RHR}, t) = \text{MA}_7(\text{RHR}_{\text{night}}, t) - \text{MA}_3(\text{RHR}_{\text{night}}, t)
-   ```
+```math
+\Delta \text{MA}_{3,7}(\text{RHR}, t) = \text{MA}_7(\text{RHR}_{\text{night}}, t) - \text{MA}_3(\text{RHR}_{\text{night}}, t)
+```
 
    (Nếu cả $\Delta \text{MA} _ {3,7}(\text{LnHRV}, t) < -0.5\thinspace \sigma _ {\text{LnHRV}}(t)$ và $\Delta \text{MA} _ {3,7}(\text{RHR}, t) < -0.5\thinspace \sigma _ {\text{RHR}}(t)$ `[Heuristic Prior]`, kích hoạt cờ cảnh báo mệt mỏi tích lũy đa ngày).
 
@@ -361,27 +361,27 @@ Theo [Doherty et al. (2025, tr. 134 & Bảng 4, tr. 136–137)](Recovery_Score_P
 
 1. **Z-Score của $\text{LnHRV}$ (Thuận chiều: HRV cao hơn baseline $\implies Z _ {\text{HRV}} > 0$):**
 
-   ```math
-   Z_{\text{HRV}}(t) = \frac{\tilde{x}_{\text{LnHRV}}(t) - \mu_{\text{LnHRV}}(t)}{\max\left(\sigma_{\text{LnHRV}}(t),\, \sigma_{\min,\text{HRV}}\right)}, \qquad \sigma_{\min,\text{HRV}} = 0.05\text{ ln-units}
-   ```
+```math
+Z_{\text{HRV}}(t) = \frac{\tilde{x}_{\text{LnHRV}}(t) - \mu_{\text{LnHRV}}(t)}{\max\left(\sigma_{\text{LnHRV}}(t),\, \sigma_{\min,\text{HRV}}\right)}, \qquad \sigma_{\min,\text{HRV}} = 0.05\text{ ln-units}
+```
 
 2. **Z-Score của $\text{RHR}$ (Ngược chiều: RHR thấp hơn baseline $\implies Z _ {\text{RHR}} > 0$):**
 
-   ```math
-   Z_{\text{RHR}}(t) = -\frac{\tilde{x}_{\text{RHR}}(t) - \mu_{\text{RHR}}(t)}{\max\left(\sigma_{\text{RHR}}(t),\, \sigma_{\min,\text{RHR}}\right)}, \qquad \sigma_{\min,\text{RHR}} = 1.20\text{ bpm}
-   ```
+```math
+Z_{\text{RHR}}(t) = -\frac{\tilde{x}_{\text{RHR}}(t) - \mu_{\text{RHR}}(t)}{\max\left(\sigma_{\text{RHR}}(t),\, \sigma_{\min,\text{RHR}}\right)}, \qquad \sigma_{\min,\text{RHR}} = 1.20\text{ bpm}
+```
 
 3. **Z-Score của Tỷ số Bão hòa Phế vị $\rho _ {\text{sat}}(t) = \frac{\text{LnHRV}(t)}{60000 / \text{RHR} _ {\text{night}}(t)} \times 10^3$ (Cơ chế từ [Buchheit, 2014](Recovery_Score_Papers/R15_Buchheit2014_PMC3936188.pdf) & [Plews et al., 2013](Recovery_Score_Papers/plews2013.pdf); chặn $0.10$ là `[Engineering Safeguard Prior]`):**
 
-   ```math
-   Z_{\rho_{\text{sat}}}(t) = \frac{\rho_{\text{sat}}(t) - \mu_{\rho_{\text{sat}}}(t)}{\max\left(\sigma_{\rho_{\text{sat}}}(t),\, 0.10\right)}
-   ```
+```math
+Z_{\rho_{\text{sat}}}(t) = \frac{\rho_{\text{sat}}(t) - \mu_{\rho_{\text{sat}}}(t)}{\max\left(\sigma_{\rho_{\text{sat}}}(t),\, 0.10\right)}
+```
 
 4. **Z-Score của Nhịp thở $\text{RespR}$ và Nhiệt độ cổ tay $T _ {\text{night}}$ (Dùng cho Hệ số phạt sinh hiệu; các sàn $0.40, 0.15$ là `[Engineering Safeguard Priors]`):**
 
-   ```math
-   Z_{\text{RespR}}(t) = \frac{\text{RespR}_{\text{night}}(t) - \mu_{\text{RespR}}(t)}{\max\left(\sigma_{\text{RespR}}(t),\, 0.40\text{ brpm}\right)}, \qquad Z_{\text{Temp}}(t) = \frac{T_{\text{night}}(t) - \mu_{\text{Temp}}(t)}{\max\left(\sigma_{\text{Temp}}(t),\, 0.15^\circ\text{C}\right)}
-   ```
+```math
+Z_{\text{RespR}}(t) = \frac{\text{RespR}_{\text{night}}(t) - \mu_{\text{RespR}}(t)}{\max\left(\sigma_{\text{RespR}}(t),\, 0.40\text{ brpm}\right)}, \qquad Z_{\text{Temp}}(t) = \frac{T_{\text{night}}(t) - \mu_{\text{Temp}}(t)}{\max\left(\sigma_{\text{Temp}}(t),\, 0.15^\circ\text{C}\right)}
+```
 
 ---
 
@@ -391,9 +391,9 @@ Dựa trên cơ chế sinh lý học bão hòa phế vị (*parasympathetic satu
 - **Trường hợp 1 (Mệt mỏi Giao cảm / Stress thật sự — Sympathetic Stress):** $\text{HRV}$ giảm ($Z _ {\text{HRV}} < 0$) đi kèm $\text{RHR}$ tăng hoặc không giảm ($Z _ {\text{RHR}} < +0.5$). Giữ nguyên $Z _ {\text{HRV}}^{\text{adj}}(t) = Z _ {\text{HRV}}(t)$.
 - **Trường hợp 2 (Bão hòa Phế vị ở người có nền tảng thể lực cao — Vagal Saturation):** Khi người dùng có nhịp tim nghỉ thấp ($\text{RHR} _ {\text{night}}(t) \le 60\text{ bpm}$, tức khoảng $\text{RR} \ge 1000\text{ ms}$), nếu $\text{HRV}$ giảm ($Z _ {\text{HRV}}(t) < 0$) nhưng $\text{RHR}$ lại giảm sâu tốt hơn đường cơ sở vượt ngưỡng $\text{SWC}$ ($Z _ {\text{RHR}}(t) \ge +0.5$) và tỷ số $\rho _ {\text{sat}}$ giảm ($Z _ {\rho _ {\text{sat}}}(t) < -0.5$), thì sự sụt giảm $\text{HRV}$ được diễn giải là bão hòa thụ thể acetylcholine chứ không phải mệt mỏi:
 
-  ```math
-  Z_{\text{HRV}}^{\text{adj}}(t) = \max\left(Z_{\text{HRV}}(t),\; 0.50 \times Z_{\text{RHR}}(t)\right)
-  ```
+```math
+Z_{\text{HRV}}^{\text{adj}}(t) = \max\left(Z_{\text{HRV}}(t),\; 0.50 \times Z_{\text{RHR}}(t)\right)
+```
 
 ---
 
@@ -430,39 +430,39 @@ Chia thành **2 trường hợp** tùy theo độ đầy đủ của dữ liệu
 1. **Tính tỷ lệ Dự trữ Nhịp tim ($\text{HRR}$) và Lọc chuyển động (Low-Motion Gating):**
    Với mỗi mẫu nhịp tim $H_m$ (khoảng thời gian $\Delta t_m$), tính phân số dự trữ nhịp tim $v_m$ (**Karvonen et al., 1957**; [Phillips et al., 2025, Phương trình 2, tr. 2](Recovery_Score_Papers/_full-text-2508.11613v2.pdf)):
 
-   ```math
-   v_m = \frac{\% \text{HRR}_m}{100} = \text{clip}_{[0, 1]}\left(\frac{H_m - \mu_{\text{RHR}}(t-1)}{\text{HR}_{\max} - \mu_{\text{RHR}}(t-1)}\right), \qquad \text{HR}_{\max} = 208 - 0.7 \times \text{Age}
-   ```
+```math
+v_m = \frac{\% \text{HRR}_m}{100} = \text{clip}_{[0, 1]}\left(\frac{H_m - \mu_{\text{RHR}}(t-1)}{\text{HR}_{\max} - \mu_{\text{RHR}}(t-1)}\right), \qquad \text{HR}_{\max} = 208 - 0.7 \times \text{Age}
+```
 
    - **Cổng kiểm tra chuyển động (*Low-motion gating* — [Phillips et al., 2025, tr. 2](Recovery_Score_Papers/_full-text-2508.11613v2.pdf); [2026, MSSE #487](Recovery_Score_Papers/_conference-cardio-load-in-exercise-and-everyday-life-a-modified-trimp.pdf); Chida & Steptoe, 2010):** Nếu mẫu $m$ không nằm trong một buổi tập đã ghi nhận (`HKWorkout`) và cảm biến quán tính không có chuyển động vật lý ($\text{StepCount} _ m = 0$ và $\text{MET} _ m < 1.3$ `[Heuristic threshold]`), loại khỏi tải vận động cơ học ($g _ {\text{motion}}(m) = 0$, ngược lại $g _ {\text{motion}}(m) = 1$).
 2. **Hai phương án tính Tải Tim Mạch:**
    - **Phương án A1 — Mô hình Modified Banister TRIMP liên tục (Chuẩn Google Cardio Load theo [Phillips et al., 2025, Phương trình 1, tr. 2](Recovery_Score_Papers/_full-text-2508.11613v2.pdf)):**
      Áp dụng ngưỡng chặn dưới **$30$% $\text{HRR}$** ($v_m \ge 0.30$ — tham khảo Blair & Connelly, 1996) và giảm trọng số vùng chuyển tiếp **30%–40% $\text{HRR}$** trước vùng MVPA ($\ge 40$% $\text{HRR}$ — Piercy & Troiano, 2018; Chastin et al., 2019). (Lưu ý: Phillips et al., 2025 **chỉ mô tả định tính** việc giảm trọng số vùng 30%–40% $\text{HRR}$, **không công bố hằng số số học**; do đó giá trị $\psi(v_m) = 0.65$ dưới đây là **`[Uncalibrated Heuristic Placeholder — cần hiệu chỉnh]`**):
 
-     ```math
-     \text{CL}_m = \begin{cases} 0 & \text{nếu } v_m < 0.30 \text{ hoặc } g_{\text{motion}}(m) = 0 \\ \psi(v_m) \cdot 0.64 \cdot v_m \cdot e^{k \cdot v_m} \cdot \Delta t_m\text{ (min)} & \text{nếu } v_m \ge 0.30 \text{ và } g_{\text{motion}}(m) = 1 \end{cases}
-     ```
+```math
+\text{CL}_m = \begin{cases} 0 & \text{nếu } v_m < 0.30 \text{ hoặc } g_{\text{motion}}(m) = 0 \\ \psi(v_m) \cdot 0.64 \cdot v_m \cdot e^{k \cdot v_m} \cdot \Delta t_m\text{ (min)} & \text{nếu } v_m \ge 0.30 \text{ và } g_{\text{motion}}(m) = 1 \end{cases}
+```
 
-     trong đó $k = 1.92$ (nam) hoặc $k = 1.67$ (nữ) ([Morton et al., 1990](Recovery_Score_Papers/morton1990.pdf); Rascon et al., 2020), và $\psi(v_m) = 0.65$ `[Heuristic]` khi $0.30 \le v_m < 0.40$, $\psi(v_m) = 1.0$ khi $v_m \ge 0.40$. Tổng tải trong ngày là $\text{CL} _ {\text{daily}}(t-1) = \sum_m \text{CL} _ m$.
+trong đó $k = 1.92$ (nam) hoặc $k = 1.67$ (nữ) ([Morton et al., 1990](Recovery_Score_Papers/morton1990.pdf); Rascon et al., 2020), và $\psi(v_m) = 0.65$ `[Heuristic]` khi $0.30 \le v_m < 0.40$, $\psi(v_m) = 1.0$ khi $v_m \ge 0.40$. Tổng tải trong ngày là $\text{CL} _ {\text{daily}}(t-1) = \sum_m \text{CL} _ m$.
    - **Phương án A2 — Mô hình Trọng số Năng lượng Từng khúc WHOOP & Hiệu chỉnh HIIT (Kế thừa trực tiếp từ Bằng sáng chế WHOOP [`P02` (Cột 25–26, tr. 51)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf) & [`P04` (`[0144]–[0148]`, tr. 42–43)](Recovery_Score_Papers/P04_WHOOP_US20170188847A1.pdf); kết hợp lý thuyết HIIT/sRPE từ Gibala et al., 2012; MacInnis & Gibala, 2017; Foster et al., 2001):**
      Trọng số từng khúc $w_0(v_m) \in \lbrace 0, 1, 18, 42\rbrace$ phản ánh tỷ số tạo ATP hiếu khí/yếm khí ($36/2 = 18$) xuất phát từ bằng sáng chế WHOOP (không có trong Lucia et al., 2003 — bài báo của Lucia chỉ dùng 3 vùng trọng số $1, 2, 3$):
 
-     ```math
-     w_0(v_m) = \begin{cases} 0 & \text{nếu } v_m \le 0.15 \text{ hoặc } g_{\text{motion}}(m) = 0 \\ 1 & \text{nếu } 0.15 < v_m \le 0.65 \text{ (vùng hiếu khí dưới ngưỡng AT)} \\ 18 & \text{nếu } 0.65 < v_m \le 0.82 \text{ (vùng yếm khí từ AT đến CPT)} \\ 42 & \text{nếu } 0.82 < v_m \le 1.00 \text{ (vùng công suất đỉnh trên CPT)} \end{cases}
-     ```
+```math
+w_0(v_m) = \begin{cases} 0 & \text{nếu } v_m \le 0.15 \text{ hoặc } g_{\text{motion}}(m) = 0 \\ 1 & \text{nếu } 0.15 < v_m \le 0.65 \text{ (vùng hiếu khí dưới ngưỡng AT)} \\ 18 & \text{nếu } 0.65 < v_m \le 0.82 \text{ (vùng yếm khí từ AT đến CPT)} \\ 42 & \text{nếu } 0.82 < v_m \le 1.00 \text{ (vùng công suất đỉnh trên CPT)} \end{cases}
+```
 
-     Cơ chế nhân trọng số động theo đạo hàm cường độ (*path-dependent HIIT weighting*) lấy từ [`P02` (Cột 26)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf) & [`P04` (tr. 43)](Recovery_Score_Papers/P04_WHOOP_US20170188847A1.pdf), kết hợp hiệu chỉnh `WorkoutEffortScore` (Dòng 21, 33 theo Foster et al., 2001); các tham số số học $\eta _ {\text{HIIT}} = 1.5$, trần $0.35$, và biên độ $\beta _ {\text{RPE}} \in [0.85, 1.25]$ là **`[Engineering Heuristic]`**:
+Cơ chế nhân trọng số động theo đạo hàm cường độ (*path-dependent HIIT weighting*) lấy từ [`P02` (Cột 26)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf) & [`P04` (tr. 43)](Recovery_Score_Papers/P04_WHOOP_US20170188847A1.pdf), kết hợp hiệu chỉnh `WorkoutEffortScore` (Dòng 21, 33 theo Foster et al., 2001); các tham số số học $\eta _ {\text{HIIT}} = 1.5$, trần $0.35$, và biên độ $\beta _ {\text{RPE}} \in [0.85, 1.25]$ là **`[Engineering Heuristic]`**:
 
-     ```math
-     w_{\text{dyn}}(v_m) = w_0(v_m) \times \beta_{\text{RPE}} \times \left(1 + \eta_{\text{HIIT}} \cdot \mathbb{I}(v_m > 0.65) \cdot \min\left(0.35,\; \frac{|\Delta v_m|}{\Delta t_m \text{ (min)}}\right)\right), \qquad \eta_{\text{HIIT}} = 1.5
-     ```
+```math
+w_{\text{dyn}}(v_m) = w_0(v_m) \times \beta_{\text{RPE}} \times \left(1 + \eta_{\text{HIIT}} \cdot \mathbb{I}(v_m > 0.65) \cdot \min\left(0.35,\; \frac{|\Delta v_m|}{\Delta t_m \text{ (min)}}\right)\right), \qquad \eta_{\text{HIIT}} = 1.5
+```
 
 3. **Ánh xạ nén phi tuyến sang thang đo Strain $[0, 21]$ (Kế thừa trực tiếp Bằng sáng chế WHOOP [`P02` (Cột 25–26, tr. 51)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf), [`P04` (tr. 42)](Recovery_Score_Papers/P04_WHOOP_US20170188847A1.pdf), [`P06` (tr. 43, 53)](Recovery_Score_Papers/P06_WHOOP_US10182726.pdf); kết hợp thang điểm của Borg, 1982 & [Doherty et al., 2025, tr. 134 & Bảng 4, tr. 137](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)):**
    Theo [Doherty et al. (2025, tr. 134, 137)](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf), thang Strain nén phi tuyến trên $[0, 21]$ (Light: $0\text{–}9$, Moderate: $10\text{–}13$, High: $14\text{–}17$, All out: $18\text{–}21$), còn phương trình tích phân `42 x 24` + `arctan` lấy trực tiếp từ Bằng sáng chế [`P02`](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf) / [`P04`](Recovery_Score_Papers/P04_WHOOP_US20170188847A1.pdf):
 
-   ```math
-   N_T = \frac{\sum_m w_{\text{dyn}}(v_m)\,\Delta t_m\text{ (hr)}}{42 \times 24\text{ hr}} \in [0, 1], \qquad \text{Strain}_{t-1} = 21 \times \frac{\arctan\left(15 \cdot (N_T - 0.08)\right) - \arctan(-1.2)}{\arctan(13.8) - \arctan(-1.2)}
-   ```
+```math
+N_T = \frac{\sum_m w_{\text{dyn}}(v_m)\,\Delta t_m\text{ (hr)}}{42 \times 24\text{ hr}} \in [0, 1], \qquad \text{Strain}_{t-1} = 21 \times \frac{\arctan\left(15 \cdot (N_T - 0.08)\right) - \arctan(-1.2)}{\arctan(13.8) - \arctan(-1.2)}
+```
 
    (Nếu quy đổi trực tiếp từ Google Cardio Load $\text{CL} _ {\text{daily}}$ sang thang $[0, 21]$, hàm nén sau là **`[Heuristic Calibration]`** — **chưa có** trong Phillips 2025/2026: $\text{Strain} _ {t-1} = 21 \times \left(1 - \exp\left(-\frac{\text{CL} _ {\text{daily}}(t-1)}{95.0}\right)\right)^{0.65}$).
 
@@ -491,58 +491,58 @@ trong đó:
 - **Nhu cầu ngủ cơ sở ($\text{Baseline} _ {\text{sleep}}$):** Mặc định $7.75\text{ giờ}$ `[Engineering Heuristic]` (nằm trong khuyến nghị $7\text{–}9\text{ giờ}$ cho thanh niên $18\text{–}25$ và người trưởng thành $26\text{–}64$ theo [Hirshkowitz et al., 2015 — bản tóm tắt NSF trích dẫn *Sleep Health* 2015;1(1):40–43](Recovery_Score_Papers/_Hirshkowitz%20%282015%29.pdf); đáng chú ý, mô hình thực nghiệm 14 ngày của [Van Dongen et al., 2003, *SLEEP*, tr. 122–123](Recovery_Score_Papers/_VanDongen2003CumulativeCost.pdf) chỉ ra ngưỡng thức tối đa không tích lũy suy giảm nhận thức trung bình là $\xi = 15.84 \pm 0.73\text{ giờ}$, tương ứng nhu cầu ngủ trung bình để triệt tiêu nợ nhận thức là $24 - \xi = \mathbf{8.16 \pm 0.73\text{ giờ}}$ với độ lệch cá thể $\text{SD} = 3.58\text{ giờ}$).
 - **Lượng ngủ cộng thêm do tải vận động ngày hôm trước $f_1(\text{Strain} _ {t-1})$ (Trực tiếp từ Bằng sáng chế WHOOP [`P01` (Claim 8, tr. 23 & `[0149]–[0153]`)](Recovery_Score_Papers/P01_WHOOP_US20240252121A1.pdf)):**
 
-  ```math
-  f_1\left(\text{Strain}_{t-1}\right) = \frac{1.7}{1 + \exp\left(\frac{17.0 - \text{Strain}_{t-1}}{3.5}\right)} \quad (\text{giờ})
-  ```
+```math
+f_1\left(\text{Strain}_{t-1}\right) = \frac{1.7}{1 + \exp\left(\frac{17.0 - \text{Strain}_{t-1}}{3.5}\right)} \quad (\text{giờ})
+```
 
 - **Nợ ngủ tích lũy cần trả trong đêm nay $f_2(\text{Debt} _ {t-1})$ (Cấu trúc từ Bằng sáng chế WHOOP [`P01`/`P02`](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf); luận cứ sinh lý từ [Van Dongen et al., 2003](Recovery_Score_Papers/_VanDongen2003CumulativeCost.pdf) — tham số $(0.75)^{m-1}$, tỷ lệ $0.30$ và trần $D _ {\max} = 2.0\text{ giờ}$ vẫn là `[Engineering Heuristic Priors]` khớp cửa sổ 14 ngày của iOS 27 `Quy tắc cho server` Dòng 4):**
   (Cơ sở từ [Van Dongen et al., 2003, tr. 122–124](Recovery_Score_Papers/_VanDongen2003CumulativeCost.pdf): Thời lượng thức dư tích lũy $\Sigma_t = (24 - \xi)t - \text{CTST} _ t$ giải thích $83.0$% phương sai sai sót chú ý theo hàm lũy thừa $t^\theta$ ($\theta = 0.67 \pm 0.05$) ngay cả khi giấc ngủ sóng chậm SWS/SWA vẫn bảo toàn, chứng minh không có cơ chế tự bù thích nghi ở mức 4–6h/đêm).
 
-  ```math
-  \text{Debt}_{\text{raw}}(t-1) = \sum_{m=1}^{\min(14, n)} (0.75)^{m-1} \max\left(0,\; \text{Sleep Need}(t-m) - \text{TST}(t-m) - \text{Naps}(t-m)\right)
-  ```
+```math
+\text{Debt}_{\text{raw}}(t-1) = \sum_{m=1}^{\min(14, n)} (0.75)^{m-1} \max\left(0,\; \text{Sleep Need}(t-m) - \text{TST}(t-m) - \text{Naps}(t-m)\right)
+```
 
-  ```math
-  f_2\left(\text{Debt}_{t-1}\right) = \min\left(2.0\text{ giờ},\; 0.30 \times \text{Debt}_{\text{raw}}(t-1)\right)
-  ```
+```math
+f_2\left(\text{Debt}_{t-1}\right) = \min\left(2.0\text{ giờ},\; 0.30 \times \text{Debt}_{\text{raw}}(t-1)\right)
+```
 
 - **Giấc ngủ ngắn ban ngày ( $\text{Naps}(t)$ ):** Tổng thời lượng ngủ trưa/ngủ ngắn trong ngày hôm trước (cấu trúc khấu trừ từ [`P01` Claim 8](Recovery_Score_Papers/P01_WHOOP_US20240252121A1.pdf); trần khấu trừ $1.5\text{ giờ}$ là `[Engineering Heuristic]` — tham khảo cảnh báo ngủ trưa $> 100\text{ phút}$ là kém chất lượng theo [Ohayon et al., 2017](Recovery_Score_Papers/_Ohayon-et-al.2017_National-Sleep-Foundations-Sleep-Quality-Recommendations.pdf)).
 
 #### Bước 5.3.2 — Tính Điểm Giấc Ngủ Thành Phần $S _ {\text{Sleep}}(t) \in [0, 100]$ (Chia 2 Trường hợp)
 1. **Điểm Thời lượng đạt Nhu cầu ngủ ($S _ {\text{SleepPerf}}$ — Bằng sáng chế WHOOP [`P02` (Cột 29–30)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf) & [Doherty et al., 2025, Bảng 4](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)):**
 
-   ```math
-   S_{\text{SleepPerf}}(t) = \min\left(100.0,\; \frac{\text{TST}(t)}{\text{Sleep Need}(t)} \times 100.0\right)
-   ```
+```math
+S_{\text{SleepPerf}}(t) = \min\left(100.0,\; \frac{\text{TST}(t)}{\text{Sleep Need}(t)} \times 100.0\right)
+```
 
 2. **Tổng hợp Điểm Giấc ngủ $S _ {\text{Sleep}}(t)$ (`[Engineering Composite]` dựa trên các mốc đơn biến của [Ohayon et al., 2017](Recovery_Score_Papers/_Ohayon-et-al.2017_National-Sleep-Foundations-Sleep-Quality-Recommendations.pdf); [S16_Miller2022](Recovery_Score_Papers/S16_Miller2022_PMC9412437.pdf); và [Doherty et al., 2025, Bảng 4](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf)):**
    - **Trường hợp 1 (Có đầy đủ Giai đoạn ngủ `Deep`/`REM` từ Apple Watch):** Theo [Ohayon et al. (2017, Bảng 2–4)](Recovery_Score_Papers/_Ohayon-et-al.2017_National-Sleep-Foundations-Sleep-Quality-Recommendations.pdf), vùng **tốt** của người trưởng thành nằm tại $\text{SE} \ge 85$% (kém khi $\le 74$%, riêng thanh niên $18\text{–}25$ là $\le 64$%), Deep N3 16%–20% (kém $\le 5$%), REM 21%–30% (vậy vùng gộp phục hồi $\text{Deep}+\text{REM}$ lý tưởng tương ứng $\sim$ 37%–50%), và số lần thức giấc ($\ge 5\text{ phút}$) $\ge 4$ là kém ($0\text{–}1$ là tốt). **Tuy nhiên**, chính Ohayon et al. (2017, tr. 16) nêu rõ *"Developing and testing composite measures for sleep quality"* vẫn là hướng nghiên cứu mở; vì vậy trọng số gộp $(0.50, 0.25, 0.25)$, biên chuẩn hóa tuyến tính [65%–92%], [20%–45%] và độ dốc phạt $1.5$ trong $P _ {\text{awake}}$ giữ nguyên là **`[Engineering Heuristic Priors]`**:
 
-     ```math
-     S_{\text{Sleep}}(t) = \text{clip}_{[0, 100]}\left(0.50\,S_{\text{SleepPerf}}(t) + 0.25\,S_{\text{Efficiency}}(t) + 0.25\,S_{\text{Stages}}(t) - P_{\text{awake}}(t)\right)
-     ```
+```math
+S_{\text{Sleep}}(t) = \text{clip}_{[0, 100]}\left(0.50\,S_{\text{SleepPerf}}(t) + 0.25\,S_{\text{Efficiency}}(t) + 0.25\,S_{\text{Stages}}(t) - P_{\text{awake}}(t)\right)
+```
 
-     ```math
-     S_{\text{Efficiency}}(t) = \text{clip}_{[0, 100]}\left(100 \times \frac{\text{SE}(t) - 65\%}{92\% - 65\%}\right), \qquad S_{\text{Stages}}(t) = \text{clip}_{[0, 100]}\left(100 \times \frac{\text{Restorative}\%(t) - 20\%}{45\% - 20\%}\right)
-     ```
+```math
+S_{\text{Efficiency}}(t) = \text{clip}_{[0, 100]}\left(100 \times \frac{\text{SE}(t) - 65\%}{92\% - 65\%}\right), \qquad S_{\text{Stages}}(t) = \text{clip}_{[0, 100]}\left(100 \times \frac{\text{Restorative}\%(t) - 20\%}{45\% - 20\%}\right)
+```
 
-     ```math
-     P_{\text{awake}}(t) = \min\left(10.0,\; 1.5 \times \max\left(0,\; N_{\text{awake}}(t) - 4\right)\right)
-     ```
+```math
+P_{\text{awake}}(t) = \min\left(10.0,\; 1.5 \times \max\left(0,\; N_{\text{awake}}(t) - 4\right)\right)
+```
 
-     (Ghi chú ngưỡng cắt: Trong công thức triển khai hiện tại, `max(0, N_awake - 4)` mới bắt đầu trừ điểm từ $N _ {\text{awake}} \ge 5$, còn nếu áp dụng đúng định nghĩa Ohayon 2017 coi $\ge 4$ cơn thức $\ge 5\text{ phút}$ là kém thì có thể đổi sang `max(0, N_awake - 3)` ở bản hiệu chỉnh sau).
+(Ghi chú ngưỡng cắt: Trong công thức triển khai hiện tại, `max(0, N_awake - 4)` mới bắt đầu trừ điểm từ $N _ {\text{awake}} \ge 5$, còn nếu áp dụng đúng định nghĩa Ohayon 2017 coi $\ge 4$ cơn thức $\ge 5\text{ phút}$ là kém thì có thể đổi sang `max(0, N_awake - 3)` ở bản hiệu chỉnh sau).
    - **Trường hợp 2 (Fallback khi chỉ có Thời lượng ngủ, thiếu Stages `Deep`/`REM` — trọng số $(0.80, 0.20)$ là `[Heuristic Prior]`):**
 
-     ```math
-     S_{\text{Sleep}}(t) = 0.80\,S_{\text{SleepPerf}}(t) + 0.20\,S_{\text{Efficiency}}(t)
-     ```
+```math
+S_{\text{Sleep}}(t) = 0.80\,S_{\text{SleepPerf}}(t) + 0.20\,S_{\text{Efficiency}}(t)
+```
 
 3. **Cổng Kìm hãm khi Thiếu ngủ Cực đoan ($M _ {\text{SleepGate}}(t) \in [0.55, 1.0]$ — `[Engineering Safety Gate]` dựa trên bằng chứng suy giảm khách quan vs. chủ quan của [Van Dongen et al., 2003](Recovery_Score_Papers/_VanDongen2003CumulativeCost.pdf); Fullagar et al., 2015; [Craven et al., 2022](Recovery_Score_Papers/GR06_Craven2022_SportsMed_s40279-022-01706-y.pdf)):**
    Theo [Van Dongen et al. (2003, Hình 4, tr. 122)](Recovery_Score_Papers/_VanDongen2003CumulativeCost.pdf), cảm nhận buồn ngủ chủ quan bão hòa sớm ($\theta = 0.16\text{–}0.24$) trong khi suy giảm hiệu suất thần kinh–hành vi tiếp tục xấu đi tuyến tính/lũy thừa ($\theta = 0.67$), đồng thời $\text{HRV}$ ngắn hạn có thể chưa tụt ngay trong đêm thiếu ngủ cấp. Do đó cổng an toàn $M _ {\text{SleepGate}}$ ngăn báo Xanh giả tạo khi ngủ $2\text{–}3\text{ giờ}$; riêng số mũ $0.30$ và sàn $0.55$ là **`[Heuristic Prior]`**:
 
-   ```math
-   M_{\text{SleepGate}}(t) = \text{clip}_{[0.55, 1.0]}\left(\left(\frac{\text{TST}(t)}{\text{Sleep Need}(t)}\right)^{0.30}\right)
-   ```
+```math
+M_{\text{SleepGate}}(t) = \text{clip}_{[0.55, 1.0]}\left(\left(\frac{\text{TST}(t)}{\text{Sleep Need}(t)}\right)^{0.30}\right)
+```
 
 ---
 
@@ -552,35 +552,35 @@ Dựa trên cơ chế phát hiện sớm nhiễm trùng/stress từ [R01_Alavi20
 
 1. **Độ lệch vượt ngưỡng Nhịp thở ban đêm ($E _ {\text{RespR}}$) `[Heuristic threshold 1.50 SD]`:**
 
-   ```math
-   E_{\text{RespR}}(t) = \begin{cases} \max\left(0,\; Z_{\text{RespR}}(t) - 1.50\right) & \text{nếu có } \text{RespR}_{\text{night}}(t) \\ 0 & \text{nếu thiếu dữ liệu} \end{cases}
-   ```
+```math
+E_{\text{RespR}}(t) = \begin{cases} \max\left(0,\; Z_{\text{RespR}}(t) - 1.50\right) & \text{nếu có } \text{RespR}_{\text{night}}(t) \\ 0 & \text{nếu thiếu dữ liệu} \end{cases}
+```
 
 2. **Độ lệch vượt ngưỡng Nhiệt độ cổ tay khi ngủ ($E _ {\text{Temp}}$) `[Heuristic threshold 1.50 SD; Biên độ bù pha hoàng thể +0.33°C đã chứng minh thực nghiệm từ Shilaih et al., 2018]`:**
    (Cảnh báo Chu kỳ Kinh nguyệt & Pháp lý Dòng 152: Nghiên cứu trên $N=136$ phụ nữ [437 chu kỳ] đeo thiết bị đo nhiệt độ cổ tay khi ngủ của [Shilaih et al. (2018, Bioscience Reports, tr. 1, 7–9)](Recovery_Score_Papers/_Shilaih_2018_Modern_fertility_awareness_methods_wrist_wearables.pdf) chứng minh nhiệt độ da cổ tay pha hoàng thể sớm cao hơn cửa sổ dễ thụ thai trung bình **`+0.33°C`** [pha kinh nguyệt `35.32 ± 0.71°C`, dễ thụ thai `35.23 ± 0.67°C`, hoàng thể sớm `36.04 ± 0.69°C`, hoàng thể muộn `35.70 ± 0.63°C`, $p < 0.001$], ngưỡng nhảy ba ngày vượt sáu ngày $\ge +0.20^\circ\text{C}$ phát hiện ở $82$% chu kỳ, và tín hiệu hai pha này bền vững cả khi có yếu tố gây nhiễu như rượu $\ge 5$ đơn vị, cà phê, ăn no hay tập trước ngủ $3\text{ giờ}$. Kết hợp cùng [Altini & Plews (2021)](Recovery_Score_Papers/R17_AltiniPlews2021_PMC8659706.pdf) [HR $+1.6$%, HRV $-3.2$%] và [Sims et al. (2021)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8291316/) ($p < 0.001$), mức bù trừ kỳ vọng khoảng **`-0.33°C`** [hoặc giá trị giả lập gần đúng `-0.35°C` ở Case 10] khi `HKCategoryTypeIdentifierMenstrualFlow` [Dòng 152 Excel — **Rủi ro pháp lý Rất cao theo MHMDA/GDPR, buộc phải xin đồng ý riêng**] báo pha hoàng thể hiện đã có nền tảng thực nghiệm công khai; riêng ngưỡng cắt phạt $+1.50\text{ SD}$ vẫn là `[Heuristic Threshold]`):
 
-   ```math
-   E_{\text{Temp}}(t) = \begin{cases} \max\left(0,\; |Z_{\text{Temp}}(t)| - 1.50\right) & \text{nếu có } T_{\text{night}}(t) \text{ (Watch Series 8+/Ultra)} \\ 0 & \text{nếu thiếu dữ liệu (Watch SE / Series } \le 7\text{)} \end{cases}
-   ```
+```math
+E_{\text{Temp}}(t) = \begin{cases} \max\left(0,\; |Z_{\text{Temp}}(t)| - 1.50\right) & \text{nếu có } T_{\text{night}}(t) \text{ (Watch Series 8+/Ultra)} \\ 0 & \text{nếu thiếu dữ liệu (Watch SE / Series } \le 7\text{)} \end{cases}
+```
 
 3. **Độ lệch vượt ngưỡng $\text{SpO} _ 2$ ($E _ {\text{SpO2}}$) `[Heuristic thresholds 1.5% / 94.0%]`:**
 
-   ```math
-   E_{\text{SpO2}}(t) = \begin{cases} \max\left(0,\; \mu_{\text{SpO2}}(t) - \text{SpO}_{2,\text{night}}(t) - 1.5\%\right) + \max\left(0,\; 94.0\% - \text{SpO}_{2,\text{night}}(t)\right) & \text{nếu có } \text{SpO}_{2,\text{night}}(t) \\ 0 & \text{nếu thiếu dữ liệu} \end{cases}
-   ```
+```math
+E_{\text{SpO2}}(t) = \begin{cases} \max\left(0,\; \mu_{\text{SpO2}}(t) - \text{SpO}_{2,\text{night}}(t) - 1.5\%\right) + \max\left(0,\; 94.0\% - \text{SpO}_{2,\text{night}}(t)\right) & \text{nếu có } \text{SpO}_{2,\text{night}}(t) \\ 0 & \text{nếu thiếu dữ liệu} \end{cases}
+```
 
 4. **Cờ Cảnh báo Đỏ NightSignal RHR ($E _ {\text{NightSignal}}$ — Ngưỡng chuyển trạng thái `+3 / +4 bpm` trên trung vị đêm từ [Alavi et al., 2022, tr. 11 & Extended Data Fig. 3](Recovery_Score_Papers/R01_Alavi2022_PMC8799466.pdf)):**
    Nếu $\text{RHR} _ {\text{night}}(t) \ge \mu _ {\text{RHR}}(t) + 4.0\text{ bpm}$ trong $2\text{ đêm}$ liên tiếp (hoặc $\ge +3.0\text{ bpm}$ đêm qua và $\ge +4.0\text{ bpm}$ đêm nay):
 
-   ```math
-   E_{\text{NightSignal}}(t) = 1.0 \quad (\text{ngược lại bằng } 0.0)
-   ```
+```math
+E_{\text{NightSignal}}(t) = 1.0 \quad (\text{ngược lại bằng } 0.0)
+```
 
 5. **Tổng hợp Hệ số Phạt Sinh hiệu $M _ {\text{Vitals}}(t)$ `[Heuristic Weights (0.12, 0.12, 0.08, 0.15) & Floor 0.35 — chưa hiệu chỉnh ROC/logistic thực nghiệm]`:**
 
-   ```math
-   M_{\text{Vitals}}(t) = \max\left(0.35,\; \exp\left(-\left[ 0.12\,E_{\text{RespR}}^2(t) + 0.12\,E_{\text{Temp}}^2(t) + 0.08\,E_{\text{SpO2}}^2(t) + 0.15\,E_{\text{NightSignal}}(t) \right]\right)\right)
-   ```
+```math
+M_{\text{Vitals}}(t) = \max\left(0.35,\; \exp\left(-\left[ 0.12\,E_{\text{RespR}}^2(t) + 0.12\,E_{\text{Temp}}^2(t) + 0.08\,E_{\text{SpO2}}^2(t) + 0.15\,E_{\text{NightSignal}}(t) \right]\right)\right)
+```
 
    - Khi mọi sinh hiệu nằm trong dải bình thường ($\pm 1.5\text{ SD}$ và $\text{SpO} _ 2 \ge 94$%): $M _ {\text{Vitals}}(t) = 1.0$ (không phạt).
    - Khi bị sốt / nhiễm trùng / uống rượu nặng làm $\text{RespR}$, $T _ {\text{wrist}}$, $\text{RHR}$ vượt ngưỡng: $M _ {\text{Vitals}}(t)$ giảm về dải thấp hơn (tới sàn $0.35$), kéo điểm Recovery xuống vùng Đỏ/Vàng.
@@ -588,7 +588,7 @@ Dựa trên cơ chế phát hiện sớm nhiễm trùng/stress từ [R01_Alavi20
 ---
 
 ### 5.5. Công thức Tải Tồn Dư & Tỷ Số Tải Cấp Tính / Mạn Tính ($M _ {\text{Strain}}(t) \in [0.85, 1.0]$)
-Theo [Phillips et al. (2025, Mục 3 & 3.2, tr. 4–8)](Recovery_Score_Papers/_full-text-2508.11613v2.pdf), **Williams et al. (2017a, *BJSM* — EWMA ACWR)**, [Williams et al. (2017b, *J. Sports Sci. Med.* — Tương tác HRV $\times$ ACWR)](Recovery_Score_Papers/_William%202017_Heart%20Rate%20Variability%20is%20a%20Moderating%20Factor%20in%20the%20Workload-Injury%20Relationship%20of%20Competitive%20CrossFit%E2%84%A2%20Athletes.pdf), [Doherty et al. (2025, Bảng 4, tr. 136 & tr. 140 — *Multicollinearity*)](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf), kết hợp với mô hình đáp ứng xung nhiều ngăn của Banister ([Morton et al., 1990](Recovery_Score_Papers/morton1990.pdf); [Kontro et al., 2025](Recovery_Score_Papers/A01_Kontro2025_arXiv2503.14841v2.pdf)):
+Theo [Phillips et al. (2025, Mục 3 & 3.2, tr. 4–8)](Recovery_Score_Papers/_full-text-2508.11613v2.pdf), **Williams et al. (2017a, *BJSM* — EWMA ACWR)**, [Williams et al. (2017b, *J. Sports Sci. Med.* — Tương tác HRV × ACWR)](Recovery_Score_Papers/_William%202017_Heart%20Rate%20Variability%20is%20a%20Moderating%20Factor%20in%20the%20Workload-Injury%20Relationship%20of%20Competitive%20CrossFit%E2%84%A2%20Athletes.pdf), [Doherty et al. (2025, Bảng 4, tr. 136 & tr. 140 — *Multicollinearity*)](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf), kết hợp với mô hình đáp ứng xung nhiều ngăn của Banister ([Morton et al., 1990](Recovery_Score_Papers/morton1990.pdf); [Kontro et al., 2025](Recovery_Score_Papers/A01_Kontro2025_arXiv2503.14841v2.pdf)):
 - Theo nguyên lý chống phạt kép của [Doherty et al. (2025, tr. 140)](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf), khi người dùng tập luyện ở ngưỡng thông thường ($\text{Strain} _ {t-1} \le 18.0$ và tỷ số tải cấp tính/mạn tính $\text{ACWR}(t-1) \le 1.3\text{–}1.5$), tác động sinh lý của buổi tập đã được phản ánh qua sự thay đổi của $\text{HRV}$ và $\text{RHR}$ ban đêm, do đó **không được trừ điểm lần hai** ($M _ {\text{Strain}}(t) = 1.0$).
 - **Luận cứ điều tiết bởi $\text{HRV}$ (HRV-Moderated ACWR Risk — [Williams et al., 2017b, tr. 446–448](Recovery_Score_Papers/_William%202017_Heart%20Rate%20Variability%20is%20a%20Moderating%20Factor%20in%20the%20Workload-Injury%20Relationship%20of%20Competitive%20CrossFit%E2%84%A2%20Athletes.pdf)):** Trên vận động viên CrossFit theo dõi 16 tuần, phân tích GLMM chứng minh có **tương tác có ý nghĩa thống kê giữa $\text{ACWR}$ và xu hướng $\text{HRV}$ tuần ($P = 0.009$)**: tải $\text{ACWR}$ cao chỉ làm tăng mạnh nguy cơ chấn thương quá tải khi $\text{LnRMSSD} _ {\text{week}}$ tụt vào nhóm thấp ($Z _ {\text{week}} < -0.31$: nguy cơ tương đối $\text{RR} = 2.61$, 90% CI `[1.38, 4.93]`), trong khi $\text{ACWR}$ cao **được dung nạp tốt nếu xu hướng $\text{HRV}$ vẫn bình thường hoặc cao**. Điều này củng cố lý thuyết chống phạt kép của Doherty (2025) và gợi ý ở phiên bản nâng cao chỉ nên kích hoạt phạt $\text{ACWR}$ đầy đủ khi $\text{HRV}$ tuần/đêm cũng đang suy giảm.
 - Ở phiên bản cơ sở hiện tại, khi người dùng vượt ngưỡng quá tải cực đoan ($\text{Strain} _ {t-1} > 18.0$ — vùng *All out* theo Doherty et al., 2025, Bảng 4; hoặc $\text{ACWR}(t-1) = \frac{\text{CL} _ {7\text{d}}(t-1)}{\max\left(\text{RM} _ {28\text{d}}(t-1),\thinspace  \text{EWMA} _ {28\text{d}}(t-1)\right)} > 1.30\text{–}1.50$, trong đó vùng cảnh báo minh họa $1.30 \times \text{Target}$ xuất hiện trong UI ring [Phillips et al., 2025, Hình 6 & 7, tr. 6–8]), hàm phạt tuyến tính dưới đây vẫn giữ trạng thái **`[Heuristic Prior (18.0, 1.50, 0.03, 0.08, floor 0.85)]`** nhằm mô phỏng mệt mỏi cơ–thần kinh tồn dư *(hệ số độ dốc cụ thể chưa có trong Williams 2017a/b)*:
@@ -613,43 +613,43 @@ Theo `Quy tắc cho server` (Dòng 3): *"User cấp quyền đọc riêng từng
    - Phân bổ trọng số khởi tạo trên Apple Watch **`[Heuristic Priors — Chưa hiệu chuẩn trên dữ liệu thực nghiệm Apple Watch]`**:
      - Nếu $\text{HRV}$ lấy từ `HeartbeatSeries` hoặc `RMSSD` (Tier 1 — chuỗi R-R Apple Watch đạt độ tin cậy cao: $\text{ICC} = 0.989$ khi nghỉ / $0.982$ khi stress theo [R24_Hernando2018](Recovery_Score_Papers/R24_Hernando2018_PMC6111985.pdf), R-R lúc nghỉ đạt $\text{MAPE} = 1.15$%, $\text{CCC} = 0.991$ theo [R25_Bonneval2025](Recovery_Score_Papers/R25_Bonneval2025_PMC12031371.pdf), và độ biến thiên $\text{LnRMSSD}$ toàn đêm $\text{CV} = 4.2 \pm 1.7$% theo [GR01_Nuuttila2024](Recovery_Score_Papers/GR01_Nuuttila2024_SportsMedOpen_s40798-024-00779-5.pdf)):
 
-       ```math
-       w_{\text{HRV},0} = 0.65, \qquad w_{\text{RHR},0} = 0.20, \qquad w_{\text{Sleep},0} = 0.15 \qquad \text{[Heuristic Prior]}
-       ```
+```math
+w_{\text{HRV},0} = 0.65, \qquad w_{\text{RHR},0} = 0.20, \qquad w_{\text{Sleep},0} = 0.15 \qquad \text{[Heuristic Prior]}
+```
 
-     - Nếu $\text{HRV}$ phải lấy từ `SDNN` (Tier 2 Fallback — do `SDNN` trên Apple Watch có sai số $\text{MAPE} = 28.88$% theo [GR03_OGrady2024](Recovery_Score_Papers/GR03_OGrady2024_Sensors_s24196220.pdf) và $31.31$% lúc nghỉ theo [R25_Bonneval2025](Recovery_Score_Papers/R25_Bonneval2025_PMC12031371.pdf), lớn hơn nhiều so với $\text{RHR}$ có $\text{MAPE} = 5.91$%):
+  - Nếu $\text{HRV}$ phải lấy từ `SDNN` (Tier 2 Fallback — do `SDNN` trên Apple Watch có sai số $\text{MAPE} = 28.88$% theo [GR03_OGrady2024](Recovery_Score_Papers/GR03_OGrady2024_Sensors_s24196220.pdf) và $31.31$% lúc nghỉ theo [R25_Bonneval2025](Recovery_Score_Papers/R25_Bonneval2025_PMC12031371.pdf), lớn hơn nhiều so với $\text{RHR}$ có $\text{MAPE} = 5.91$%):
 
-       ```math
-       w_{\text{HRV},0} = 0.55, \qquad w_{\text{RHR},0} = 0.25, \qquad w_{\text{Sleep},0} = 0.20 \qquad \text{[Heuristic Prior]}
-       ```
+```math
+w_{\text{HRV},0} = 0.55, \qquad w_{\text{RHR},0} = 0.25, \qquad w_{\text{Sleep},0} = 0.20 \qquad \text{[Heuristic Prior]}
+```
 
 2. **Điều biến Trọng số Động Bất đối xứng (Dynamic Asymmetric Weighting — `[Engineering Heuristic]`):**
    (Cơ chế nhân hệ số $0.20, 0.60, 0.50$, ngưỡng kích hoạt $-0.50, -0.75$ và quy chuẩn $S _ {\text{Sleep}}$ theo $(75.0, 15.0)$ là tham số kỹ thuật giả định chưa trích từ bài báo thực nghiệm):
    Khi $\text{RHR}$ tăng vọt bất thường hoặc giấc ngủ bị thiếu hụt sâu, trọng số phạt của chúng tự động tăng lên; đồng thời nhân với độ tin cậy mẫu $Q _ {\text{HRV}}(t)$:
 
-   ```math
-   \tilde{w}_{\text{HRV}}(t) = w_{\text{HRV},0} \cdot Q_{\text{HRV}}(t) \cdot \left[ 1 + 0.20 \max\left(0,\; -Z_{\text{HRV}}^{\text{adj}}(t) - 0.50\right) \right]
-   ```
+```math
+\tilde{w}_{\text{HRV}}(t) = w_{\text{HRV},0} \cdot Q_{\text{HRV}}(t) \cdot \left[ 1 + 0.20 \max\left(0,\; -Z_{\text{HRV}}^{\text{adj}}(t) - 0.50\right) \right]
+```
 
-   ```math
-   \tilde{w}_{\text{RHR}}(t) = w_{\text{RHR},0} \cdot \left[ 1 + 0.60 \max\left(0,\; -Z_{\text{RHR}}(t) - 0.75\right) \right]
-   ```
+```math
+\tilde{w}_{\text{RHR}}(t) = w_{\text{RHR},0} \cdot \left[ 1 + 0.60 \max\left(0,\; -Z_{\text{RHR}}(t) - 0.75\right) \right]
+```
 
-   ```math
-   \tilde{w}_{\text{Sleep}}(t) = w_{\text{Sleep},0} \cdot \left[ 1 + 0.50 \max\left(0,\; -\frac{S_{\text{Sleep}}(t) - 75.0}{15.0} - 0.75\right) \right]
-   ```
+```math
+\tilde{w}_{\text{Sleep}}(t) = w_{\text{Sleep},0} \cdot \left[ 1 + 0.50 \max\left(0,\; -\frac{S_{\text{Sleep}}(t) - 75.0}{15.0} - 0.75\right) \right]
+```
 
    Chuẩn hóa tổng trọng số bằng $1$:
 
-   ```math
-   w_i(t) = \frac{\tilde{w}_i(t)}{\tilde{w}_{\text{HRV}}(t) + \tilde{w}_{\text{RHR}}(t) + \tilde{w}_{\text{Sleep}}(t)}, \qquad i \in \{\text{HRV}, \text{RHR}, \text{Sleep}\}
-   ```
+```math
+w_i(t) = \frac{\tilde{w}_i(t)}{\tilde{w}_{\text{HRV}}(t) + \tilde{w}_{\text{RHR}}(t) + \tilde{w}_{\text{Sleep}}(t)}, \qquad i \in \{\text{HRV}, \text{RHR}, \text{Sleep}\}
+```
 
 3. **Công thức Tổng hợp Recovery Score $\mathcal{R}(t) \in [1, 99]$:**
 
-   ```math
-   \mathcal{R}(t) = \text{round}\left(\text{clip}_{[1, 99]}\left( \left[ w_{\text{HRV}}(t)\,S_{\text{HRV}}(t) + w_{\text{RHR}}(t)\,S_{\text{RHR}}(t) + w_{\text{Sleep}}(t)\,S_{\text{Sleep}}(t) \right] \times M_{\text{SleepGate}}(t) \times M_{\text{Vitals}}(t) \times M_{\text{Strain}}(t) \right)\right)
-   ```
+```math
+\mathcal{R}(t) = \text{round}\left(\text{clip}_{[1, 99]}\left( \left[ w_{\text{HRV}}(t)\,S_{\text{HRV}}(t) + w_{\text{RHR}}(t)\,S_{\text{RHR}}(t) + w_{\text{Sleep}}(t)\,S_{\text{Sleep}}(t) \right] \times M_{\text{SleepGate}}(t) \times M_{\text{Vitals}}(t) \times M_{\text{Strain}}(t) \right)\right)
+```
 
    (Lưu ý: Cấu trúc weighted sum $w_i S_i$ kết hợp cổng nhân $M _ {\text{SleepGate}} \times M _ {\text{Vitals}} \times M _ {\text{Strain}}$ là thiết kế kỹ thuật kết hợp nguyên lý WHOOP/Doherty; các tham số cụ thể của $M _ {\text{Vitals}}$ và $M _ {\text{Strain}}$ hiện đang là `[Heuristic Prior]`).
 
@@ -659,9 +659,9 @@ Theo `Quy tắc cho server` (Dòng 3): *"User cấp quyền đọc riêng từng
 *(Ví dụ: Người dùng tắt quyền đọc Sleep nhưng có đeo Watch hoặc đo Mindfulness/Breathe buổi sáng — `Dòng 199`)*
 - Đặt $w _ {\text{Sleep}}(t) = 0$, $M _ {\text{SleepGate}}(t) = 1.0$, chuẩn hóa lại trọng số giữa $\text{HRV}$ và $\text{RHR}$ ($w _ {\text{HRV},0} = 0.75,\thinspace  w _ {\text{RHR},0} = 0.25$ — `[Heuristic Prior]`):
 
-  ```math
-  \mathcal{R}(t) = \text{round}\left(\text{clip}_{[1, 99]}\left( \left[ w_{\text{HRV}}(t)\,S_{\text{HRV}}(t) + w_{\text{RHR}}(t)\,S_{\text{RHR}}(t) \right] \times M_{\text{Vitals}}(t) \times M_{\text{Strain}}(t) \right)\right)
-  ```
+```math
+\mathcal{R}(t) = \text{round}\left(\text{clip}_{[1, 99]}\left( \left[ w_{\text{HRV}}(t)\,S_{\text{HRV}}(t) + w_{\text{RHR}}(t)\,S_{\text{RHR}}(t) \right] \times M_{\text{Vitals}}(t) \times M_{\text{Strain}}(t) \right)\right)
+```
 
 ---
 
@@ -669,9 +669,9 @@ Theo `Quy tắc cho server` (Dòng 3): *"User cấp quyền đọc riêng từng
 *(Theo `Quy tắc cho server` Dòng 3: Tắt quyền HRV thì màn Recovery không có trạng thái HRV dù người đó có đeo Watch; tương tự chế độ thiếu HRV trên thiết bị được nêu tại [Doherty et al., 2025, Bảng 3, tr. 135](Recovery_Score_Papers/R23_Doherty2025_teb-2025-0001.pdf))*
 - Đặt $w _ {\text{HRV}}(t) = 0$, tái phân bổ trọng số cơ sở sang $\text{RHR}$ ($w _ {\text{RHR},0} = 0.60$) và $\text{Sleep}$ ($w _ {\text{Sleep},0} = 0.40$ — `[Heuristic Prior]`):
 
-  ```math
-  \mathcal{R}(t) = \text{round}\left(\text{clip}_{[1, 99]}\left( \left[ w_{\text{RHR}}(t)\,S_{\text{RHR}}(t) + w_{\text{Sleep}}(t)\,S_{\text{Sleep}}(t) \right] \times M_{\text{SleepGate}}(t) \times M_{\text{Vitals}}(t) \times M_{\text{Strain}}(t) \right)\right)
-  ```
+```math
+\mathcal{R}(t) = \text{round}\left(\text{clip}_{[1, 99]}\left( \left[ w_{\text{RHR}}(t)\,S_{\text{RHR}}(t) + w_{\text{Sleep}}(t)\,S_{\text{Sleep}}(t) \right] \times M_{\text{SleepGate}}(t) \times M_{\text{Vitals}}(t) \times M_{\text{Strain}}(t) \right)\right)
+```
 
 - Hiển thị nhãn phụ trên UI: *"Ước tính từ Nhịp tim nghỉ & Giấc ngủ (Chưa có dữ liệu HRV)"*.
 
@@ -700,11 +700,11 @@ Theo [Doherty et al. (2025, Bảng 4, tr. 136–137)](Recovery_Score_Papers/R23_
   - Theo nghiên cứu thực nghiệm trên $40,000$ người dùng trong $6\text{ tuần}$ của [Phillips et al. (2026, MSSE #487)](Recovery_Score_Papers/_conference-cardio-load-in-exercise-and-everyday-life-a-modified-trimp.pdf), mục tiêu tải tính theo từng ngày đơn lẻ có độ biến động rất lớn ($\text{CV}$% $= 35.2$%), trong khi mục tiêu tải theo tuần ổn định hơn nhiều ($\text{CV}$% $= 23.6$%).
   - Để vừa giữ được tính thích ứng khi người dùng nghỉ ốm/chấn thương vừa không bị kìm hãm khi người dùng quay lại tập luyện, **Mục tiêu Tải Tuần ($\text{CL} _ {\text{WeeklyTarget}}$)** được lấy bằng giá trị cực đại giữa Trung bình trượt 28 ngày ($\text{RM} _ {28}$) và Trung bình trượt hàm mũ ($\text{EWMA}$) ([Phillips et al., 2025, Phương trình 3, tr. 8](Recovery_Score_Papers/_full-text-2508.11613v2.pdf)):
 
-    ```math
-    \text{CL}_{\text{WeeklyTarget}}(w) = \max\left[\text{RM}_{28}(w),\; \text{EWMA}(w),\; \text{CL}_{\min}\right]
-    ```
+```math
+\text{CL}_{\text{WeeklyTarget}}(w) = \max\left[\text{RM}_{28}(w),\; \text{EWMA}(w),\; \text{CL}_{\min}\right]
+```
 
-    với $\text{EWMA}(w) = \alpha \cdot \text{CL}(w) + (1 - \alpha) \cdot \text{EWMA}(w-1)$, ngưỡng cảnh báo quá tải tuần (*Overreaching threshold*) minh họa trên đồ họa vòng UI đặt tại $1.30 \times \text{CL} _ {\text{WeeklyTarget}}(w)$ ([Phillips et al., 2025, Hình 6 & 7, tr. 7–8](Recovery_Score_Papers/_full-text-2508.11613v2.pdf) — lưu ý bản in 2025 chưa công bố tham số $\alpha, \text{CL} _ {\min}$ bằng số cụ thể). Điểm Recovery Score $\mathcal{R}(t)$ mỗi sáng giúp người dùng phân bổ linh hoạt lượng tải trong ngày để tiến tới $\text{CL} _ {\text{WeeklyTarget}}(w)$ mà không vượt ngưỡng chấn thương.
+với $\text{EWMA}(w) = \alpha \cdot \text{CL}(w) + (1 - \alpha) \cdot \text{EWMA}(w-1)$, ngưỡng cảnh báo quá tải tuần (*Overreaching threshold*) minh họa trên đồ họa vòng UI đặt tại $1.30 \times \text{CL} _ {\text{WeeklyTarget}}(w)$ ([Phillips et al., 2025, Hình 6 & 7, tr. 7–8](Recovery_Score_Papers/_full-text-2508.11613v2.pdf) — lưu ý bản in 2025 chưa công bố tham số $\alpha, \text{CL} _ {\min}$ bằng số cụ thể). Điểm Recovery Score $\mathcal{R}(t)$ mỗi sáng giúp người dùng phân bổ linh hoạt lượng tải trong ngày để tiến tới $\text{CL} _ {\text{WeeklyTarget}}(w)$ mà không vượt ngưỡng chấn thương.
 - **Cơ chế Dịch chuyển Ngưỡng Sẵn sàng Động theo Mục tiêu Tập luyện ([P02_WHOOP, Cột 30](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf); [Vesterinen et al., 2016](Recovery_Score_Papers/R12_Vesterinen2016_JYX.pdf); Kellmann, 2010):**
   Cơ chế nâng ngưỡng vùng Xanh/Vàng tùy thuộc mục tiêu bài tập sắp tới được mô tả trong Bằng sáng chế [P02 (Cột 30)](Recovery_Score_Papers/P02_WHOOP_US9750415B2.pdf). Tài liệu này tạm đặt quy tắc `[Heuristic]`: nếu người dùng lên lịch trước một buổi tập/thi đấu cường độ rất cao ($\text{PlannedStrain} \ge 16.0$), ngưỡng biên dưới của vùng Xanh (`Green Threshold`) và vùng Vàng (`Yellow Threshold`) có thể dịch chuyển tăng thêm $+5$% (ví dụ cần $\mathcal{R}(t) \ge 72$% mới báo Xanh cho bài tập HIIT tối đa).
 
@@ -830,9 +830,9 @@ Các bộ trọng số $(0.65, 0.20, 0.15)$ ở Phần I hiện mới là **tiê
 - **Công thức tính trọng số:**
   Với mỗi biến sinh lý $i \in \lbrace \text{HRV}, \text{RHR}, \text{Sleep}\rbrace$, gọi $\text{ICC} _ i$ là độ lặp lại sinh học/thiết bị, $\text{MAPE} _ i$ là sai số phần trăm tuyệt đối của thiết bị ([GR03_OGrady2024](Recovery_Score_Papers/GR03_OGrady2024_Sensors_s24196220.pdf); [R25_Bonneval2025](Recovery_Score_Papers/R25_Bonneval2025_PMC12031371.pdf); [R24_Hernando2018](Recovery_Score_Papers/R24_Hernando2018_PMC6111985.pdf); [S16_Miller2022](Recovery_Score_Papers/S16_Miller2022_PMC9412437.pdf)), và $|r _ {i,\text{perf}}|$ là hệ số tương quan thực nghiệm của biến $i$ với tiêu chí hiệu suất / cảm nhận mệt mỏi ([Lundstrom et al., 2024](Recovery_Score_Papers/lundstrom-et-al-2023-wearable-technology-metrics-are-associated-with-energy-deficiency-and-psychological-stress-in.pdf); [R19_Saw2016](Recovery_Score_Papers/R19_Saw2016_PMC4789708.pdf)):
 
-  ```math
-  w_i = \frac{I_i}{\sum_{j} I_j}, \qquad \text{với } I_i = |r_{i,\text{perf}}|^2 \times \frac{\text{ICC}_i}{1 - \text{ICC}_i + \left(\text{MAPE}_i / 100\right)^2}
-  ```
+```math
+w_i = \frac{I_i}{\sum_{j} I_j}, \qquad \text{với } I_i = |r_{i,\text{perf}}|^2 \times \frac{\text{ICC}_i}{1 - \text{ICC}_i + \left(\text{MAPE}_i / 100\right)^2}
+```
 
 - **Ví dụ minh họa tham số hóa (`[Synthetic Illustration — Giá trị r_perf & ICC chưa đo đồng thời trên cùng cohort Apple Watch]`):**
   - Nếu đặt giả định minh họa trên `HeartbeatSeries`: $|r _ {\text{HRV}}| = 0.62, \text{ICC} _ {\text{HRV}} = 0.94, \text{MAPE} _ {\text{RMSSD}} = 3$%; $|r _ {\text{RHR}}| = 0.36, \text{ICC} _ {\text{RHR}} = 0.93, \text{MAPE} _ {\text{RHR}} = 5.91$% ([GR03_OGrady2024](Recovery_Score_Papers/GR03_OGrady2024_Sensors_s24196220.pdf)); $|r _ {\text{Sleep}}| = 0.38, \text{ICC} _ {\text{Sleep}} = 0.85$, công thức cho ra tỷ lệ minh họa $(0.648, 0.204, 0.148)$ *(hoặc với MAPE khác trong code kiểm thử Phần III)*. (Lưu ý quan trọng: Các hệ số $|r _ {\text{perf}}| = (0.62, 0.36, 0.38)$ và bộ $\text{ICC} = (0.94, 0.93, 0.85)$ là giả định minh họa, không phải kết quả trực tiếp từ O'Grady/Nuuttila/Hernando).
@@ -843,9 +843,9 @@ Các bộ trọng số $(0.65, 0.20, 0.15)$ ở Phần I hiện mới là **tiê
 - **Công thức đề xuất:**
   Gọi $\mathbf{\Sigma} _ {\text{within}} \in \mathbb{R}^{3 \times 3}$ là ma trận tương quan nội cá nhân ước lượng từ dữ liệu dọc Apple Watch giữa $\mathbf{z} _ t = [Z _ {\text{HRV}}(t), Z _ {\text{RHR}}(t), Z _ {\text{Sleep}}(t)]^\top$, và $\mathbf{r} _ {\text{outcome}} = [r _ {\text{HRV}}, r _ {\text{RHR}}, r _ {\text{Sleep}}]^\top$ là vector tương quan đơn biến với biến mục tiêu phục hồi. Nghiệm trực giao hóa loại bỏ phần thông tin trùng lặp:
 
-  ```math
-  \tilde{\mathbf{w}} = \mathbf{\Sigma}_{\text{within}}^{-1}\,\mathbf{r}_{\text{outcome}}, \qquad w_i = \frac{\max(0, \tilde{w}_i)}{\sum_{j=1}^3 \max(0, \tilde{w}_j)}
-  ```
+```math
+\tilde{\mathbf{w}} = \mathbf{\Sigma}_{\text{within}}^{-1}\,\mathbf{r}_{\text{outcome}}, \qquad w_i = \frac{\max(0, \tilde{w}_i)}{\sum_{j=1}^3 \max(0, \tilde{w}_j)}
+```
 
   (Lưu ý: Phương pháp này hiện là đề xuất lý thuyết; chưa có ma trận $\mathbf{\Sigma} _ {\text{within}}$ thực nghiệm từ Apple Watch và chưa được cài đặt thành hàm riêng trong `PublicWeightCalibrationEngine`).
 
@@ -854,24 +854,24 @@ Các bộ trọng số $(0.65, 0.20, 0.15)$ ở Phần I hiện mới là **tiê
 - **Công thức ước lượng đề xuất:**
   Khi thu thập được biến mục tiêu chủ quan $Y _ {u,t} \in [0, 100]$ mỗi sáng (ví dụ **Hooper Wellness Index** theo [Hooper et al., 1995](Recovery_Score_Papers/hooper1995.pdf) & [R19_Saw2016](Recovery_Score_Papers/R19_Saw2016_PMC4789708.pdf)) hoặc kết quả bài kiểm tra hiệu suất buổi sáng trên người dùng $u$ vào ngày $t$:
 
-  ```math
-  Y_{u,t} = \left(\beta_0 + b_{0,u}\right) + \left(\beta_{\text{HRV}} + b_{1,u}\right) S_{\text{HRV},u,t} + \beta_{\text{RHR}}\,S_{\text{RHR},u,t} + \beta_{\text{Sleep}}\,S_{\text{Sleep},u,t} - \beta_{\text{Strain}}\,\text{Strain}_{u,t-1} + \epsilon_{u,t}
-  ```
+```math
+Y_{u,t} = \left(\beta_0 + b_{0,u}\right) + \left(\beta_{\text{HRV}} + b_{1,u}\right) S_{\text{HRV},u,t} + \beta_{\text{RHR}}\,S_{\text{RHR},u,t} + \beta_{\text{Sleep}}\,S_{\text{Sleep},u,t} - \beta_{\text{Strain}}\,\text{Strain}_{u,t-1} + \epsilon_{u,t}
+```
 
   trong đó $\mathbf{b} _ u \sim \mathcal{N}(\mathbf{0}, \mathbf{\Sigma} _ b)$ là hiệu ứng ngẫu nhiên theo cá nhân. Trọng số chuẩn hóa thu từ cực đại hợp lý hạn chế (REML):
 
-  ```math
-  w_i = \frac{\hat{\beta}_i}{\hat{\beta}_{\text{HRV}} + \hat{\beta}_{\text{RHR}} + \hat{\beta}_{\text{Sleep}}}
-  ```
+```math
+w_i = \frac{\hat{\beta}_i}{\hat{\beta}_{\text{HRV}} + \hat{\beta}_{\text{RHR}} + \hat{\beta}_{\text{Sleep}}}
+```
 
 ### Phương pháp 4: Phân Tích Thành Phần Chính Nội Cá Nhân (`wsPCA`) & FPCA Xử Lý Khuyết Dữ Liệu Có Thông Tin (`imFunPCA`)
 - **Nền tảng lý thuyết:** Khung xây dựng chỉ số tổng hợp không giám sát kinh điển (Unsupervised Composite Index — Jolliffe, 2002; [Nunan et al., 2010](Recovery_Score_Papers/nunan2010.pdf)) kết hợp mở rộng hàm chuỗi thời gian dọc khuyết có thông tin (**imFunPCA** — [Shi, Dong, Wang, & Cao, 2021, *Statistics in Medicine*](Recovery_Score_Papers/_Wang%2C_2021_StatisticsInMedicine-2020-Shi-FPCA4LongitudinalDataWithInformative.pdf)) khi chưa có nhãn chủ quan.
 - **Công thức tính:**
   Với ma trận Z-score cá nhân hóa $\mathbf{Z} = \left[ Z _ {\text{HRV}}(t),\enspace  Z _ {\text{RHR}}(t),\enspace  Z _ {\text{Sleep}}(t) \right] \in \mathbb{R}^{T \times 3}$, tính ma trận tương quan nội cá nhân $\mathbf{R} _ {\text{within}} = \frac{1}{T-1}\mathbf{Z}^\top \mathbf{Z}$, tìm vector riêng thứ nhất $\mathbf{v} _ 1 = (v _ {1,1}, v _ {1,2}, v _ {1,3})^\top$ ứng với trị riêng lớn nhất $\lambda_1$:
 
-  ```math
-  w_i = \frac{v_{1,i}^2}{\sum_{j=1}^3 v_{1,j}^2}
-  ```
+```math
+w_i = \frac{v_{1,i}^2}{\sum_{j=1}^3 v_{1,j}^2}
+```
 
 - **Khắc phục sai lệch khuyết dữ liệu không ngẫu nhiên khi hiệu chuẩn quần thể ([Shi et al., 2021](Recovery_Score_Papers/_Wang%2C_2021_StatisticsInMedicine-2020-Shi-FPCA4LongitudinalDataWithInformative.pdf)):** Trong thực tế đeo Apple Watch, người dùng hay bỏ đeo hoặc bật Low Power Mode đúng vào lúc quá mệt, ốm, du lịch hoặc bỏ cuộc (*informative missingness* — không phải MCAR). Khi khuyết có thông tin ở mức cao, phương pháp FPCA cổ điển (PACE) cho sai số bình phương tích phân (IMSE) của hàm trung bình lớn gấp **$\sim 8$ lần** ($2.612$ so với $0.314$) và FPC thứ hai sai lệch tới **$30$ lần** ($2.444$ so với $0.077$) vì chỉ mẫu người khỏe còn tồn tại được tính vào hiệp phương sai. Do đó, ở bước **hiệu chuẩn ngoại tuyến (offline calibration)** trên tập dữ liệu dọc quần thể, áp dụng `imFunPCA` tối đa hóa hợp lý trực giao kết hợp xác suất tích lũy phần khuyết $\Phi(\cdot)^{\delta _ {ij}}$ để ước lượng quỹ đạo chuẩn không chệch *(lưu ý tuân thủ `Ghi chú quốc gia` Dòng 4: chỉ dùng ở bước học tham số offline, tuyệt đối không suy diễn người dùng bị bệnh vào ngày thiếu dữ liệu trên app)*.
 
@@ -880,9 +880,9 @@ Các bộ trọng số $(0.65, 0.20, 0.15)$ ở Phần I hiện mới là **tiê
 - **Công thức ước lượng đề xuất:**
   Gọi $D _ {u,t} \in \lbrace 0, 1\rbrace$ là nhãn ngày bị ốm/sốt hoặc uống rượu nặng. Ước lượng các hệ số $(\gamma_m, \theta_m)$ từ độ lệch vượt ngưỡng $E_m(t) = \max(0, Z_m(t) - \theta_m)$:
 
-  ```math
-  \ln\left(\frac{P(D_{u,t}=1)}{1 - P(D_{u,t}=1)}\right) = \gamma_0 + \gamma_{\text{RespR}}\,E_{\text{RespR}}^2(t) + \gamma_{\text{Temp}}\,E_{\text{Temp}}^2(t) + \gamma_{\text{SpO2}}\,E_{\text{SpO2}}^2(t) + \gamma_{\text{RHR}}\,E_{\text{NightSignal}}(t)
-  ```
+```math
+\ln\left(\frac{P(D_{u,t}=1)}{1 - P(D_{u,t}=1)}\right) = \gamma_0 + \gamma_{\text{RespR}}\,E_{\text{RespR}}^2(t) + \gamma_{\text{Temp}}\,E_{\text{Temp}}^2(t) + \gamma_{\text{SpO2}}\,E_{\text{SpO2}}^2(t) + \gamma_{\text{RHR}}\,E_{\text{NightSignal}}(t)
+```
 
   từ đó chọn $\theta_m$ qua chỉ số Youden's $J = \max _ {\theta}[\text{Sensitivity}(\theta) + \text{Specificity}(\theta) - 1]$ và dùng trọng số phạt $M _ {\text{Vitals}}(t) = \exp\left(-\sum_m \gamma_m E_m^2(t)\right)$.
 
@@ -891,19 +891,19 @@ Các bộ trọng số $(0.65, 0.20, 0.15)$ ở Phần I hiện mới là **tiê
 - **Công thức trạng thái:**
   Xem trạng thái sẵn sàng ẩn $x _ {\text{ready}}(t)$ là hiệu số giữa Thích nghi Thể lực ($g(t)$, $\tau_1 = 42\text{ ngày}$) và Mệt mỏi Tồn dư ($h(t)$, $\tau_2 = 7\text{ ngày}$) dưới tác động của xung tải $\text{TRIMP}(t)$:
 
-  ```math
-  g(t) = g(t-1)\,e^{-1/\tau_1} + \text{TRIMP}(t-1), \qquad h(t) = h(t-1)\,e^{-1/\tau_2} + \text{TRIMP}(t-1)
-  ```
+```math
+g(t) = g(t-1)\,e^{-1/\tau_1} + \text{TRIMP}(t-1), \qquad h(t) = h(t-1)\,e^{-1/\tau_2} + \text{TRIMP}(t-1)
+```
 
-  ```math
-  x_{\text{prior}}(t) = x_0 + k_1\,g(t) - k_2\,h(t)
-  ```
+```math
+x_{\text{prior}}(t) = x_0 + k_1\,g(t) - k_2\,h(t)
+```
 
   Các phép đo buổi sáng $\mathbf{y}(t) = \left[ S _ {\text{HRV}}(t),\thinspace  S _ {\text{RHR}}(t),\thinspace  S _ {\text{Sleep}}(t) \right]^\top$ đóng vai trò vector quan sát nhiễu trong Bộ lọc Kalman; Hệ số Lợi ích Kalman $\mathbf{K} _ t$ (tỷ lệ nghịch với ma trận hiệp phương sai nhiễu đo $\mathbf{R} _ t$) cập nhật trạng thái ẩn thành $\mathcal{R}(t)$ (cần ước lượng $(k_1, k_2, \mathbf{R} _ t)$ thực nghiệm thay cho giá trị giả định):
 
-  ```math
-  \mathcal{R}(t) = \hat{x}_{\text{post}}(t) = x_{\text{prior}}(t) + \mathbf{K}_t \left(\mathbf{y}(t) - \mathbf{H}\,x_{\text{prior}}(t)\right)
-  ```
+```math
+\mathcal{R}(t) = \hat{x}_{\text{post}}(t) = x_{\text{prior}}(t) + \mathbf{K}_t \left(\mathbf{y}(t) - \mathbf{H}\,x_{\text{prior}}(t)\right)
+```
 
 ---
 
